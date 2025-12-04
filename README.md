@@ -1,6 +1,6 @@
-# Verbident CareQuest
+# Verbident
 
-Flutter application for Verbident CareQuest deployed on **iOS and Android** across **mobile phones and tablets**.
+Flutter application for Verbident deployed on **iOS and Android** across **mobile phones and tablets**.
 
 
 ## Deployment

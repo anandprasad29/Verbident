@@ -1,4 +1,4 @@
-Verbident CareQuest helps children prepare for dental visits through visual storytelling and interactive exploration.
+Verbident helps children prepare for dental visits through visual storytelling and interactive exploration.
 
 FEATURES:
 
@@ -23,4 +23,4 @@ No accounts required. No data collection. Everything stays on your device.
 Multilingual Support
 Available in English and Spanish.
 
-Download Verbident CareQuest today and make dental visits less scary!
+Download Verbident today and make dental visits less scary!

@@ -44,7 +44,7 @@ class _VerbidentAppState extends ConsumerState<VerbidentApp> {
 
     return MaterialApp.router(
       routerConfig: goRouter,
-      onGenerateTitle: (context) => 'Verbident CareQuest',
+      onGenerateTitle: (context) => 'Verbident',
       theme: AppTheme.staticLightTheme,
       darkTheme: AppTheme.staticDarkTheme,
       themeMode: themeMode.themeMode,

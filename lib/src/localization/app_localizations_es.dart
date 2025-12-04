@@ -9,7 +9,7 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
-  String get appTitle => 'Verbident CareQuest';
+  String get appTitle => 'Verbident';
 
   @override
   String get navLibrary => 'Biblioteca';

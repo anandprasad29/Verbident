@@ -1,11 +1,11 @@
 {
-    "name": "Verbident CareQuest",
+    "name": "Verbident",
     "short_name": "Verbident",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
     "theme_color": "#4284F3",
-    "description": "Verbident CareQuest - Dental care communication app",
+    "description": "Verbident - Dental care communication app",
     "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
