@@ -180,6 +180,16 @@ class DentalItems {
     'stop',
   ];
 
+  /// IDs for the "During Visit" items grid.
+  /// These items are shown as a flat image grid.
+  static const List<String> duringVisitIds = [
+    'dental-mirror',
+    'dental-drill',
+    'suction',
+    'open-mouth',
+    'stop',
+  ];
+
   /// Lookup map for fast ID-based access.
   static final Map<String, DentalItem> _itemMap = {
     for (var item in all) item.id: item,
@@ -205,6 +215,10 @@ class DentalItems {
   /// Get items for the Before Visit tools grid.
   static List<DentalItem> get beforeVisitToolsItems =>
       getByIds(beforeVisitToolsIds);
+
+  /// Get items for the During Visit items grid.
+  static List<DentalItem> get duringVisitItems =>
+      getByIds(duringVisitIds);
 
   // Private constructor to prevent instantiation
   DentalItems._();

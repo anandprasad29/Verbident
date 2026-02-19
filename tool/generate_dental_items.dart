@@ -40,6 +40,11 @@ void main() async {
       .map((e) => e as String)
       .toList();
 
+  // Parse during visit items IDs
+  final duringVisitItems = (yaml['during_visit_items'] as YamlList)
+      .map((e) => e as String)
+      .toList();
+
   // Generate the Dart code
   final buffer = StringBuffer();
 
@@ -95,6 +100,16 @@ void main() async {
   buffer.writeln("  ];");
   buffer.writeln();
 
+  // Generate during visit items IDs
+  buffer.writeln("  /// IDs for the \"During Visit\" items grid.");
+  buffer.writeln("  /// These items are shown as a flat image grid.");
+  buffer.writeln("  static const List<String> duringVisitIds = [");
+  for (final id in duringVisitItems) {
+    buffer.writeln("    '$id',");
+  }
+  buffer.writeln("  ];");
+  buffer.writeln();
+
   // Generate lookup map and helper methods
   buffer.writeln("  /// Lookup map for fast ID-based access.");
   buffer.writeln("  static final Map<String, DentalItem> _itemMap = {");
@@ -127,6 +142,11 @@ void main() async {
   buffer.writeln("      getByIds(beforeVisitToolsIds);");
   buffer.writeln();
 
+  buffer.writeln("  /// Get items for the During Visit items grid.");
+  buffer.writeln("  static List<DentalItem> get duringVisitItems =>");
+  buffer.writeln("      getByIds(duringVisitIds);");
+  buffer.writeln();
+
   // Private constructor
   buffer.writeln("  // Private constructor to prevent instantiation");
   buffer.writeln("  DentalItems._();");
@@ -140,6 +160,7 @@ void main() async {
   print('✅ Generated ${items.length} dental items');
   print('✅ Before Visit Story: ${beforeVisitStory.length} items');
   print('✅ Before Visit Tools: ${beforeVisitTools.length} items');
+  print('✅ During Visit: ${duringVisitItems.length} items');
   print('✅ Output: ${outputFile.path}');
 }
 

@@ -182,6 +182,20 @@ void main() {
       }
     });
 
+    test('duringVisitItems has correct items', () {
+      final items = DentalItems.duringVisitItems;
+      expect(items.length, equals(5));
+
+      final ids = items.map((i) => i.id).toList();
+      expect(ids, [
+        'dental-mirror',
+        'dental-drill',
+        'suction',
+        'open-mouth',
+        'stop',
+      ]);
+    });
+
     test('sampleItems is a fixed list', () {
       // Should be the same instance each time
       final list1 = DentalItems.all;

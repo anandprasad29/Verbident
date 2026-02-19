@@ -141,3 +141,12 @@ before_visit_tools:
   - suction
   - open-mouth
   - stop
+
+# IDs for the "During Visit" items grid
+# These items are shown as a flat image grid
+during_visit_items:
+  - dental-mirror
+  - dental-drill
+  - suction
+  - open-mouth
+  - stop

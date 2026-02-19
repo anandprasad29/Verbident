@@ -58,12 +58,11 @@ class SidebarConfig {
       route: Routes.beforeVisit,
       testKey: 'sidebar_item_before_visit',
     ),
-    // TODO: Add "During the visit" back when the feature is ready
-    // SidebarItemData(
-    //   labelKey: 'navDuringVisit',
-    //   route: Routes.duringVisit,
-    //   testKey: 'sidebar_item_during_visit',
-    // ),
+    SidebarItemData(
+      labelKey: 'navDuringVisit',
+      route: Routes.duringVisit,
+      testKey: 'sidebar_item_during_visit',
+    ),
   ];
 
   /// Static items that appear at the bottom (after custom templates)

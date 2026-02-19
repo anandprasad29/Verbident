@@ -10,6 +10,8 @@ import '../features/library/presentation/library_page.dart';
 // Deferred loading for non-critical pages (reduces initial bundle size)
 import '../features/before_visit/presentation/before_visit_page.dart'
     deferred as before_visit;
+import '../features/during_visit/presentation/during_visit_page.dart'
+    deferred as during_visit;
 import '../features/build_own/presentation/build_own_page.dart'
     deferred as build_own;
 import '../features/build_own/presentation/custom_template_page.dart'
@@ -116,14 +118,14 @@ GoRouter goRouter(Ref ref) {
           buildPage: () => before_visit.BeforeVisitPage(),
         ),
       ),
-      // Placeholder routes for future pages
       GoRoute(
         path: Routes.duringVisit,
         name: 'duringVisit',
-        pageBuilder: (context, state) => _buildPageWithTransition(
+        pageBuilder: (context, state) => _buildDeferredPage(
           context: context,
           state: state,
-          child: const DashboardPage(), // TODO: Create DuringVisitPage
+          loadLibrary: during_visit.loadLibrary(),
+          buildPage: () => during_visit.DuringVisitPage(),
         ),
       ),
       GoRoute(
