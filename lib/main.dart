@@ -14,17 +14,19 @@ Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // Initialize Firebase (required before app starts)
-  await Firebase.initializeApp();
-
-  // Configure Crashlytics error handlers (synchronous - no await needed)
-  FlutterError.onError = (errorDetails) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  };
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
+  // Initialize Firebase (skip gracefully on platforms without config, e.g. web)
+  try {
+    await Firebase.initializeApp();
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  } catch (e) {
+    debugPrint('Firebase initialization skipped: $e');
+  }
 
   // Run non-critical initialization in parallel to reduce startup time
   // These don't need to complete before the app renders
@@ -37,7 +39,7 @@ Future<void> main() async {
 /// This reduces perceived startup time.
 Future<void> _postInitialization() async {
   // Disable Crashlytics in debug mode for cleaner logs
-  if (kDebugMode) {
+  if (kDebugMode && Firebase.apps.isNotEmpty) {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
   }
 
