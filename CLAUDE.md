@@ -87,12 +87,15 @@ lib/src/
 
 ## Testing
 
+**Always add tests when adding new features or code.** New widgets need widget tests, new providers/models need unit tests, and visual changes need golden test updates. Run `flutter test` before committing.
+
 ```bash
 flutter test                        # All tests
 flutter test test/library_page_test.dart  # Single test file
+flutter test --update-goldens       # Update golden files after visual changes
 ```
 
-Key test files: `library_page_test.dart`, `dashboard_page_test.dart`, `tts_service_test.dart`, `responsive_layout_test.dart`, `story_sequence_test.dart`, `build_own_test.dart`, `sidebar_test.dart`
+Key test files: `library_page_test.dart`, `dashboard_page_test.dart`, `tts_service_test.dart`, `responsive_layout_test.dart`, `story_sequence_test.dart`, `build_own_test.dart`, `sidebar_test.dart`, `category_header_test.dart`
 
 Tests use `SharedPreferences.setMockInitialValues({})` for mock setup. Golden tests are in `test/goldens/`.
 

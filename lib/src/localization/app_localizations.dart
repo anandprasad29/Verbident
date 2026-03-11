@@ -481,6 +481,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hello! This is a test.'**
   String get settingsTestSpeechSample;
+
+  /// Category header for actions and objects
+  ///
+  /// In en, this message translates to:
+  /// **'Actions & Objects'**
+  String get categorySectionActions;
+
+  /// Category header for instructional words
+  ///
+  /// In en, this message translates to:
+  /// **'Instructional Words'**
+  String get categorySectionInstructional;
+
+  /// Category header for expression items
+  ///
+  /// In en, this message translates to:
+  /// **'Expression'**
+  String get categorySectionExpression;
+
+  /// Category header for non-dental items
+  ///
+  /// In en, this message translates to:
+  /// **'Non-Dental'**
+  String get categorySectionNonDental;
 }
 
 class _AppLocalizationsDelegate

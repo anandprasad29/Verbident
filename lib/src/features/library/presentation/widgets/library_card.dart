@@ -20,12 +20,17 @@ class LibraryCard extends StatelessWidget {
   /// Whether TTS is currently speaking this card's content
   final bool isSpeaking;
 
+  /// Optional border color override for category tinting.
+  /// If null, uses the default card border color.
+  final Color? borderColor;
+
   const LibraryCard({
     super.key,
     required this.item,
     this.onTap,
     this.caption,
     this.isSpeaking = false,
+    this.borderColor,
   });
 
   /// The displayed caption (uses override if provided, otherwise item.caption)
@@ -61,7 +66,7 @@ class LibraryCard extends StatelessWidget {
                           border: Border.all(
                             color: isSpeaking
                                 ? context.appSpeakingIndicator
-                                : context.appCardBorder,
+                                : borderColor ?? context.appCardBorder,
                             width: isSpeaking
                                 ? AppConstants.cardBorderWidth + 1
                                 : AppConstants.cardBorderWidth,

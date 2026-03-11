@@ -63,6 +63,10 @@
   "settingsVoiceMale": "Masculina",
   "settingsTestSpeech": "Probar voz",
   "settingsTestSpeechHint": "Toca para escuchar una muestra",
-  "settingsTestSpeechSample": "¡Hola! Esta es una prueba."
+  "settingsTestSpeechSample": "¡Hola! Esta es una prueba.",
+  "categorySectionActions": "Acciones y objetos",
+  "categorySectionInstructional": "Palabras instructivas",
+  "categorySectionExpression": "Expresión",
+  "categorySectionNonDental": "No dental"
 }
 

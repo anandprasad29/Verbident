@@ -32,8 +32,8 @@ class ContentTranslations {
       'es': 'Este es un espejo',
     },
     'dental-drill': {
-      'en': "This is the dentist's drill",
-      'es': 'Este es el taladro del dentista',
+      'en': 'This is the Drill',
+      'es': 'Este es el taladro',
     },
     'suction': {
       'en': 'This is a suction',
@@ -126,6 +126,26 @@ class ContentTranslations {
     },
   };
 
+  /// Category name translations keyed by category ID, then by language code.
+  static const Map<String, Map<String, String>> _categoryNames = {
+    'actions-and-objects': {
+      'en': 'Actions & Objects',
+      'es': 'Acciones y objetos',
+    },
+    'instructional-words': {
+      'en': 'Instructional Words',
+      'es': 'Palabras instructivas',
+    },
+    'expression': {
+      'en': 'Expression',
+      'es': 'Expresión',
+    },
+    'non-dental': {
+      'en': 'Non-Dental',
+      'es': 'No dental',
+    },
+  };
+
   /// Get the translated caption for a given item ID and language.
   /// Falls back to English if translation is not available.
   static String getCaption(String id, ContentLanguage language) {
@@ -136,13 +156,16 @@ class ContentTranslations {
     return translations[language.code] ?? translations['en'] ?? '';
   }
 
+  /// Get the translated category name for a given category ID and language.
+  /// Falls back to English if translation is not available.
+  static String getCategoryName(String categoryId, ContentLanguage language) {
+    final translations = _categoryNames[categoryId];
+    if (translations == null) {
+      return categoryId;
+    }
+    return translations[language.code] ?? translations['en'] ?? categoryId;
+  }
+
   // Private constructor to prevent instantiation
   ContentTranslations._();
 }
-
-
-
-
-
-
-
