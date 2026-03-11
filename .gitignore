@@ -113,6 +113,7 @@ test/failures/
 
 # General / Misc
 logs/
+.worktrees/
 
 # Code signing certificates and provisioning profiles
 *.cer
