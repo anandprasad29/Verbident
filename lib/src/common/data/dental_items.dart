@@ -14,31 +14,6 @@ class DentalItems {
   /// Images are stored in `assets/images/library/`.
   static const List<DentalItem> all = [
     DentalItem(
-      id: 'dentist-chair',
-      imagePath: 'assets/images/library/dentist_chair.webp',
-      caption: "This is the dentist's chair",
-    ),
-    DentalItem(
-      id: 'dentist-mask',
-      imagePath: 'assets/images/library/dentist_mask.webp',
-      caption: 'The dentist wears a mask',
-    ),
-    DentalItem(
-      id: 'dentist-gloves',
-      imagePath: 'assets/images/library/dentist_gloves.webp',
-      caption: 'The dentist wears a glove',
-    ),
-    DentalItem(
-      id: 'bright-light',
-      imagePath: 'assets/images/library/bright_light.webp',
-      caption: 'The dentist has a bright light',
-    ),
-    DentalItem(
-      id: 'count-teeth',
-      imagePath: 'assets/images/library/count_teeth.webp',
-      caption: 'The dentist will count your teeth',
-    ),
-    DentalItem(
       id: 'dental-mirror',
       imagePath: 'assets/images/library/dental_mirror.webp',
       caption: 'This is a mirror',
@@ -160,26 +135,6 @@ class DentalItems {
     ),
   ];
 
-  /// IDs for the "Before Visit" story sequence.
-  /// These items are shown in a horizontal flow with arrows.
-  static const List<String> beforeVisitStoryIds = [
-    'dentist-chair',
-    'dentist-mask',
-    'dentist-gloves',
-    'bright-light',
-    'count-teeth',
-  ];
-
-  /// IDs for the "Before Visit" tools grid.
-  /// These items are shown in a grid layout.
-  static const List<String> beforeVisitToolsIds = [
-    'dental-mirror',
-    'dental-drill',
-    'suction',
-    'open-mouth',
-    'stop',
-  ];
-
   /// IDs for the "During Visit" items grid.
   /// These items are shown as a flat image grid.
   static const List<String> duringVisitIds = [
@@ -207,14 +162,6 @@ class DentalItems {
   /// Get a single item by ID.
   /// Returns null if not found.
   static DentalItem? getById(String id) => _itemMap[id];
-
-  /// Get items for the Before Visit story sequence.
-  static List<DentalItem> get beforeVisitStoryItems =>
-      getByIds(beforeVisitStoryIds);
-
-  /// Get items for the Before Visit tools grid.
-  static List<DentalItem> get beforeVisitToolsItems =>
-      getByIds(beforeVisitToolsIds);
 
   /// Get items for the During Visit items grid.
   static List<DentalItem> get duringVisitItems =>

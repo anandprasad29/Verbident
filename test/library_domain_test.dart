@@ -91,8 +91,8 @@ void main() {
       expect(DentalItems.all, isNotEmpty);
     });
 
-    test('sampleItems contains 29 items', () {
-      expect(DentalItems.all.length, equals(29));
+    test('sampleItems contains 24 items', () {
+      expect(DentalItems.all.length, equals(24));
     });
 
     test('all items have unique ids', () {
@@ -129,19 +129,19 @@ void main() {
 
       // Check for some expected items
       expect(
-        captions.any((c) => c.toLowerCase().contains('chair')),
-        isTrue,
-        reason: 'Should have dentist chair item',
-      );
-      expect(
-        captions.any((c) => c.toLowerCase().contains('mask')),
-        isTrue,
-        reason: 'Should have mask item',
-      );
-      expect(
         captions.any((c) => c.toLowerCase().contains('mirror')),
         isTrue,
         reason: 'Should have mirror item',
+      );
+      expect(
+        captions.any((c) => c.toLowerCase().contains('drill')),
+        isTrue,
+        reason: 'Should have drill item',
+      );
+      expect(
+        captions.any((c) => c.toLowerCase().contains('suction')),
+        isTrue,
+        reason: 'Should have suction item',
       );
     });
 
@@ -155,11 +155,6 @@ void main() {
 
     test('items have meaningful ids', () {
       final expectedFirstIds = [
-        'dentist-chair',
-        'dentist-mask',
-        'dentist-gloves',
-        'bright-light',
-        'count-teeth',
         'dental-mirror',
         'dental-drill',
         'suction',

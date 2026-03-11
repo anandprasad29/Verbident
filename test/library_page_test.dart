@@ -383,7 +383,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('renders all 29 sample items', (tester) async {
+    testWidgets('renders all 24 sample items', (tester) async {
       tester.view.physicalSize =
           const Size(1450, 4000); // Tall to show all items
       tester.view.devicePixelRatio = 1.0;
@@ -400,8 +400,8 @@ void main() {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -2000));
       await tester.pumpAndSettle();
 
-      // Should have 29 LibraryCard widgets
-      expect(find.byType(LibraryCard), findsNWidgets(29));
+      // Should have 24 LibraryCard widgets
+      expect(find.byType(LibraryCard), findsNWidgets(24));
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -670,7 +670,7 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
 
       // Enter search text
-      await tester.enterText(find.byType(TextField), 'chair');
+      await tester.enterText(find.byType(TextField), 'mirror');
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pumpAndSettle();
 

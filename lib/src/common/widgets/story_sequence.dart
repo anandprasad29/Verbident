@@ -7,10 +7,11 @@ import '../domain/dental_item.dart';
 import 'speaking_indicator.dart';
 import 'tappable_card.dart';
 
-/// A horizontal widget displaying dental items in a story sequence
-/// with arrow connectors between each item. Used for showing step-by-step
-/// dental visit flows. Items are sized to fit within the available width,
-/// or scrollable if items would be too small.
+/// A widget displaying dental items in a story sequence with arrow connectors.
+///
+/// Layout adapts based on screen width:
+/// - **Tablet+ (>= 600px):** Horizontal layout with larger items, centered.
+/// - **Phone (< 600px):** Vertical layout with downward arrows.
 class StorySequence extends StatelessWidget {
   final List<DentalItem> items;
   final void Function(DentalItem item)? onItemTap;
@@ -21,17 +22,23 @@ class StorySequence extends StatelessWidget {
   /// The text currently being spoken by TTS (for showing speaking indicator)
   final String? speakingText;
 
-  /// Padding around the sequence (should match grid padding)
+  /// Padding around the sequence
   final EdgeInsets padding;
 
   /// Horizontal padding between arrow and adjacent images
   final double arrowPadding;
 
-  /// Width of the arrow line (excluding padding)
-  final double arrowWidth;
+  /// Size of the arrow connector (width when horizontal, height when vertical)
+  final double arrowSize;
+
+  /// Breakpoint for switching between horizontal and vertical layout
+  static const double _tabletBreakpoint = 600.0;
 
   /// Minimum item size to ensure captions are readable
   static const double _minItemSize = 100.0;
+
+  /// Maximum item size for tablet+ layout
+  static const double _maxItemSize = 180.0;
 
   const StorySequence({
     super.key,
@@ -41,7 +48,7 @@ class StorySequence extends StatelessWidget {
     this.speakingText,
     this.padding = const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
     this.arrowPadding = 8,
-    this.arrowWidth = 24,
+    this.arrowSize = 24,
   });
 
   @override
@@ -51,58 +58,72 @@ class StorySequence extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final availableWidth = constraints.maxWidth;
-          final itemCount = items.length;
-          final arrowCount = itemCount - 1;
+          final isHorizontal = availableWidth >= _tabletBreakpoint;
 
-          // Total space taken by arrows (arrow width + padding on both sides)
-          final totalArrowSpace = arrowCount * (arrowWidth + arrowPadding * 2);
-
-          // Calculate item size to fit all items in available width
-          final calculatedItemSize =
-              (availableWidth - totalArrowSpace) / itemCount;
-
-          // Use minimum size if calculated size is too small
-          final itemSize = calculatedItemSize < _minItemSize
-              ? _minItemSize
-              : calculatedItemSize;
-
-          // Check if we need to scroll (items don't fit in available width)
-          final needsScroll = calculatedItemSize < _minItemSize;
-
-          final content = Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: needsScroll ? MainAxisSize.min : MainAxisSize.max,
-            children: _buildSequenceItems(itemSize),
-          );
-
-          // Wrap in horizontal scroll view if items don't fit
-          if (needsScroll) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: content,
-            );
+          if (isHorizontal) {
+            return _buildHorizontalLayout(availableWidth);
+          } else {
+            return _buildVerticalLayout(availableWidth);
           }
-
-          return content;
         },
       ),
     );
   }
 
-  List<Widget> _buildSequenceItems(double itemSize) {
+  /// Horizontal layout for tablet+ screens
+  Widget _buildHorizontalLayout(double availableWidth) {
+    final itemCount = items.length;
+    final arrowCount = itemCount - 1;
+    final totalArrowSpace = arrowCount * (arrowSize + arrowPadding * 2);
+
+    var itemSize = (availableWidth - totalArrowSpace) / itemCount;
+    itemSize = itemSize.clamp(_minItemSize, _maxItemSize);
+
+    final needsScroll = itemSize <= _minItemSize;
+
+    final content = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: needsScroll ? MainAxisSize.min : MainAxisSize.max,
+      children: _buildSequenceWidgets(itemSize, isVertical: false),
+    );
+
+    if (needsScroll) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: content,
+      );
+    }
+
+    return content;
+  }
+
+  /// Vertical layout for phone screens
+  Widget _buildVerticalLayout(double availableWidth) {
+    // Use most of available width, capped at max size
+    final itemSize = (availableWidth * 0.6).clamp(_minItemSize, _maxItemSize);
+
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: _buildSequenceWidgets(itemSize, isVertical: true),
+      ),
+    );
+  }
+
+  List<Widget> _buildSequenceWidgets(
+    double itemSize, {
+    required bool isVertical,
+  }) {
     final List<Widget> widgets = [];
 
     for (int i = 0; i < items.length; i++) {
-      // Get translated caption if language is provided
       final caption = contentLanguage != null
           ? ContentTranslations.getCaption(items[i].id, contentLanguage!)
           : items[i].caption;
 
-      // Check if this item is currently being spoken
       final isSpeaking = speakingText != null && speakingText == caption;
 
-      // Add the story item with key for efficient updates
       widgets.add(
         _StoryItem(
           key: ValueKey('story_${items[i].id}'),
@@ -114,14 +135,14 @@ class StorySequence extends StatelessWidget {
         ),
       );
 
-      // Add arrow between items (not after the last one)
       if (i < items.length - 1) {
         widgets.add(
           _ArrowConnector(
             key: ValueKey('arrow_$i'),
-            width: arrowWidth,
-            horizontalPadding: arrowPadding,
+            size: arrowSize,
+            padding: arrowPadding,
             imageSize: itemSize,
+            isVertical: isVertical,
           ),
         );
       }
@@ -132,7 +153,6 @@ class StorySequence extends StatelessWidget {
 }
 
 /// Individual item in the story sequence with image and caption.
-/// Includes tap feedback animation and speaking indicator.
 class _StoryItem extends StatelessWidget {
   final DentalItem item;
   final String caption;
@@ -151,8 +171,6 @@ class _StoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate optimal cache size based on display size and pixel ratio
-    // This reduces memory usage by ~70-90% for oversized source images
     final pixelRatio = MediaQuery.devicePixelRatioOf(context);
     final cacheSize = (size * pixelRatio).ceil();
 
@@ -166,7 +184,6 @@ class _StoryItem extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Image container with blue border (wrapped in Stack for speaking indicator)
               Stack(
                 children: [
                   Container(
@@ -193,7 +210,6 @@ class _StoryItem extends StatelessWidget {
                       child: Image.asset(
                         item.imagePath,
                         fit: BoxFit.cover,
-                        // Decode image at display size to reduce memory usage
                         cacheWidth: cacheSize,
                         cacheHeight: cacheSize,
                         errorBuilder: (context, error, stackTrace) {
@@ -209,7 +225,6 @@ class _StoryItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Speaking indicator overlay
                   if (isSpeaking)
                     Positioned(
                       top: 8,
@@ -235,7 +250,6 @@ class _StoryItem extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              // Caption text
               Text(
                 caption,
                 style: TextStyle(
@@ -256,30 +270,44 @@ class _StoryItem extends StatelessWidget {
   }
 }
 
-/// Arrow connector between story items with horizontal padding.
+/// Arrow connector between story items — horizontal or vertical.
 class _ArrowConnector extends StatelessWidget {
-  final double width;
-  final double horizontalPadding;
+  final double size;
+  final double padding;
   final double imageSize;
+  final bool isVertical;
 
   const _ArrowConnector({
     super.key,
-    required this.width,
-    required this.horizontalPadding,
+    required this.size,
+    required this.padding,
     required this.imageSize,
+    required this.isVertical,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (isVertical) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: padding),
+        child: CustomPaint(
+          size: Size(16, size),
+          painter: _ArrowPainter(
+            color: context.appCardBorder,
+            isVertical: true,
+          ),
+        ),
+      );
+    }
+
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      padding: EdgeInsets.symmetric(horizontal: padding),
       child: SizedBox(
-        width: width,
-        // Center arrow vertically with the image (half of image size)
+        width: size,
         child: Padding(
           padding: EdgeInsets.only(top: imageSize / 2 - 8),
           child: CustomPaint(
-            size: Size(width, 16),
+            size: Size(size, 16),
             painter: _ArrowPainter(color: context.appCardBorder),
           ),
         ),
@@ -288,11 +316,12 @@ class _ArrowConnector extends StatelessWidget {
   }
 }
 
-/// Custom painter for drawing an arrow pointing right.
+/// Custom painter for drawing an arrow — right-pointing or down-pointing.
 class _ArrowPainter extends CustomPainter {
   final Color color;
+  final bool isVertical;
 
-  _ArrowPainter({required this.color});
+  _ArrowPainter({required this.color, this.isVertical = false});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -302,26 +331,46 @@ class _ArrowPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    final arrowHeadSize = size.height * 0.5;
-    final centerY = size.height / 2;
+    if (isVertical) {
+      final arrowHeadSize = size.width * 0.5;
+      final centerX = size.width / 2;
 
-    // Draw the line
-    canvas.drawLine(
-      Offset(0, centerY),
-      Offset(size.width - arrowHeadSize, centerY),
-      paint,
-    );
+      // Vertical line
+      canvas.drawLine(
+        Offset(centerX, 0),
+        Offset(centerX, size.height - arrowHeadSize),
+        paint,
+      );
 
-    // Draw the arrow head
-    final arrowPath = Path()
-      ..moveTo(size.width - arrowHeadSize, centerY - arrowHeadSize)
-      ..lineTo(size.width, centerY)
-      ..lineTo(size.width - arrowHeadSize, centerY + arrowHeadSize);
+      // Arrow head pointing down
+      final arrowPath = Path()
+        ..moveTo(centerX - arrowHeadSize, size.height - arrowHeadSize)
+        ..lineTo(centerX, size.height)
+        ..lineTo(centerX + arrowHeadSize, size.height - arrowHeadSize);
 
-    canvas.drawPath(arrowPath, paint);
+      canvas.drawPath(arrowPath, paint);
+    } else {
+      final arrowHeadSize = size.height * 0.5;
+      final centerY = size.height / 2;
+
+      // Horizontal line
+      canvas.drawLine(
+        Offset(0, centerY),
+        Offset(size.width - arrowHeadSize, centerY),
+        paint,
+      );
+
+      // Arrow head pointing right
+      final arrowPath = Path()
+        ..moveTo(size.width - arrowHeadSize, centerY - arrowHeadSize)
+        ..lineTo(size.width, centerY)
+        ..lineTo(size.width - arrowHeadSize, centerY + arrowHeadSize);
+
+      canvas.drawPath(arrowPath, paint);
+    }
   }
 
   @override
   bool shouldRepaint(covariant _ArrowPainter oldDelegate) =>
-      oldDelegate.color != color;
+      oldDelegate.color != color || oldDelegate.isVertical != isVertical;
 }

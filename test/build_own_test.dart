@@ -141,10 +141,10 @@ void main() {
 
     test('getItemsFromIds returns items in correct order', () {
       // Using known library item IDs
-      final items = getItemsFromIds(['dentist-chair', 'dental-mirror']);
+      final items = getItemsFromIds(['dental-mirror', 'dental-drill']);
       expect(items.length, 2);
-      expect(items[0].id, 'dentist-chair');
-      expect(items[1].id, 'dental-mirror');
+      expect(items[0].id, 'dental-mirror');
+      expect(items[1].id, 'dental-drill');
     });
   });
 
@@ -680,17 +680,17 @@ void main() {
   group('Utility Functions', () {
     test('getItemsFromIds returns items in order', () {
       // Use actual IDs from DentalItems.all
-      final ids = ['dentist-chair', 'dental-mirror', 'suction'];
+      final ids = ['dental-mirror', 'dental-drill', 'suction'];
       final items = getItemsFromIds(ids);
 
       expect(items.length, 3);
-      expect(items[0].id, 'dentist-chair');
-      expect(items[1].id, 'dental-mirror');
+      expect(items[0].id, 'dental-mirror');
+      expect(items[1].id, 'dental-drill');
       expect(items[2].id, 'suction');
     });
 
     test('getItemsFromIds skips unknown ids', () {
-      final ids = ['dentist-chair', 'unknown-item', 'dental-mirror'];
+      final ids = ['dental-mirror', 'unknown-item', 'suction'];
       final items = getItemsFromIds(ids);
 
       expect(items.length, 2);

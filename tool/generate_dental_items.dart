@@ -30,16 +30,6 @@ void main() async {
     });
   }
 
-  // Parse before visit story IDs
-  final beforeVisitStory = (yaml['before_visit_story'] as YamlList)
-      .map((e) => e as String)
-      .toList();
-
-  // Parse before visit tools IDs
-  final beforeVisitTools = (yaml['before_visit_tools'] as YamlList)
-      .map((e) => e as String)
-      .toList();
-
   // Parse during visit items IDs
   final duringVisitItems = (yaml['during_visit_items'] as YamlList)
       .map((e) => e as String)
@@ -80,26 +70,6 @@ void main() async {
   buffer.writeln("  ];");
   buffer.writeln();
 
-  // Generate before visit story IDs
-  buffer.writeln("  /// IDs for the \"Before Visit\" story sequence.");
-  buffer.writeln("  /// These items are shown in a horizontal flow with arrows.");
-  buffer.writeln("  static const List<String> beforeVisitStoryIds = [");
-  for (final id in beforeVisitStory) {
-    buffer.writeln("    '$id',");
-  }
-  buffer.writeln("  ];");
-  buffer.writeln();
-
-  // Generate before visit tools IDs
-  buffer.writeln("  /// IDs for the \"Before Visit\" tools grid.");
-  buffer.writeln("  /// These items are shown in a grid layout.");
-  buffer.writeln("  static const List<String> beforeVisitToolsIds = [");
-  for (final id in beforeVisitTools) {
-    buffer.writeln("    '$id',");
-  }
-  buffer.writeln("  ];");
-  buffer.writeln();
-
   // Generate during visit items IDs
   buffer.writeln("  /// IDs for the \"During Visit\" items grid.");
   buffer.writeln("  /// These items are shown as a flat image grid.");
@@ -132,16 +102,6 @@ void main() async {
   buffer.writeln("  static DentalItem? getById(String id) => _itemMap[id];");
   buffer.writeln();
 
-  buffer.writeln("  /// Get items for the Before Visit story sequence.");
-  buffer.writeln("  static List<DentalItem> get beforeVisitStoryItems =>");
-  buffer.writeln("      getByIds(beforeVisitStoryIds);");
-  buffer.writeln();
-
-  buffer.writeln("  /// Get items for the Before Visit tools grid.");
-  buffer.writeln("  static List<DentalItem> get beforeVisitToolsItems =>");
-  buffer.writeln("      getByIds(beforeVisitToolsIds);");
-  buffer.writeln();
-
   buffer.writeln("  /// Get items for the During Visit items grid.");
   buffer.writeln("  static List<DentalItem> get duringVisitItems =>");
   buffer.writeln("      getByIds(duringVisitIds);");
@@ -158,8 +118,6 @@ void main() async {
   await outputFile.writeAsString(buffer.toString());
 
   print('✅ Generated ${items.length} dental items');
-  print('✅ Before Visit Story: ${beforeVisitStory.length} items');
-  print('✅ Before Visit Tools: ${beforeVisitTools.length} items');
   print('✅ During Visit: ${duringVisitItems.length} items');
   print('✅ Output: ${outputFile.path}');
 }

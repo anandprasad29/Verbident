@@ -5,27 +5,6 @@
 
 # All dental items available in the app
 dental_items:
-  # Dental visit scenarios
-  - id: dentist-chair
-    image: dentist_chair.webp
-    caption: "This is the dentist's chair"
-
-  - id: dentist-mask
-    image: dentist_mask.webp
-    caption: The dentist wears a mask
-
-  - id: dentist-gloves
-    image: dentist_gloves.webp
-    caption: The dentist wears a glove
-
-  - id: bright-light
-    image: bright_light.webp
-    caption: The dentist has a bright light
-
-  - id: count-teeth
-    image: count_teeth.webp
-    caption: The dentist will count your teeth
-
   # Dental tools and actions
   - id: dental-mirror
     image: dental_mirror.webp
@@ -123,24 +102,6 @@ dental_items:
   - id: "yes"
     image: yes.webp
     caption: "Yes"
-
-# IDs for the "Before Visit" story sequence
-# These items are shown in a horizontal flow with arrows
-before_visit_story:
-  - dentist-chair
-  - dentist-mask
-  - dentist-gloves
-  - bright-light
-  - count-teeth
-
-# IDs for the "Before Visit" tools grid
-# These items are shown in a grid layout
-before_visit_tools:
-  - dental-mirror
-  - dental-drill
-  - suction
-  - open-mouth
-  - stop
 
 # IDs for the "During Visit" items grid
 # These items are shown as a flat image grid

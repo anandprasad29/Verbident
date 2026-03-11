@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../common/data/dental_items.dart';
+import '../../../common/domain/dental_item.dart';
 import '../../../common/services/analytics_service.dart';
 import '../../../common/widgets/story_sequence.dart';
 import '../../../constants/app_constants.dart';
@@ -11,11 +11,40 @@ import '../../../theme/app_colors.dart';
 import '../../../utils/responsive.dart';
 import '../../../widgets/app_shell.dart';
 import '../../../widgets/language_selector.dart';
-import '../../library/presentation/widgets/library_card.dart';
 import '../../library/services/tts_service.dart';
 
+/// Story items shown in the Before Visit sequence.
+/// These are defined locally (not in the shared library catalog).
+const _storyItems = [
+  DentalItem(
+    id: 'dentist-chair',
+    imagePath: 'assets/images/library/dentist_chair.webp',
+    caption: "This is the dentist's chair",
+  ),
+  DentalItem(
+    id: 'dentist-mask',
+    imagePath: 'assets/images/library/dentist_mask.webp',
+    caption: 'The dentist wears a mask',
+  ),
+  DentalItem(
+    id: 'dentist-gloves',
+    imagePath: 'assets/images/library/dentist_gloves.webp',
+    caption: 'The dentist wears a glove',
+  ),
+  DentalItem(
+    id: 'bright-light',
+    imagePath: 'assets/images/library/bright_light.webp',
+    caption: 'The dentist has a bright light',
+  ),
+  DentalItem(
+    id: 'count-teeth',
+    imagePath: 'assets/images/library/count_teeth.webp',
+    caption: 'The dentist will count your teeth',
+  ),
+];
+
 /// Before Visit page displaying dental visit preparation content.
-/// Shows a story sequence with arrows and a tools grid below.
+/// Shows a story sequence with arrows — horizontal on tablets, vertical on phones.
 /// Tapping any item triggers text-to-speech of the caption.
 class BeforeVisitPage extends ConsumerStatefulWidget {
   const BeforeVisitPage({super.key});
@@ -30,37 +59,27 @@ class _BeforeVisitPageState extends ConsumerState<BeforeVisitPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Precache all images on first load to eliminate decode jank during scroll
     if (!_imagesPrecached) {
       _imagesPrecached = true;
       _precacheImages();
     }
   }
 
-  /// Precache all before visit images for smoother scrolling performance
   void _precacheImages() {
-    // Precache story sequence images
-    for (final item in DentalItems.beforeVisitStoryItems) {
-      precacheImage(AssetImage(item.imagePath), context);
-    }
-    // Precache tools grid images
-    for (final item in DentalItems.beforeVisitToolsItems) {
+    for (final item in _storyItems) {
       precacheImage(AssetImage(item.imagePath), context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Read services (don't watch - only need for method calls)
     final ttsService = ref.read(ttsServiceProvider);
     final analytics = ref.read(analyticsServiceProvider);
     final contentLanguage = ref.watch(contentLanguageNotifierProvider);
 
-    // Watch speaking text stream for UI feedback
     final speakingTextAsync = ref.watch(ttsSpeakingTextStreamProvider);
     final speakingText = speakingTextAsync.valueOrNull;
 
-    // Update TTS language when content language changes
     ref.listen<ContentLanguage>(contentLanguageNotifierProvider, (
       previous,
       next,
@@ -86,7 +105,6 @@ class _BeforeVisitPageState extends ConsumerState<BeforeVisitPage> {
     ContentLanguage contentLanguage,
     String? speakingText,
   ) {
-    // Single MediaQuery call for all layout values (performance optimization)
     final layout = Responsive.getGridLayout(context);
     final l10n = AppLocalizations.of(context);
 
@@ -94,7 +112,6 @@ class _BeforeVisitPageState extends ConsumerState<BeforeVisitPage> {
       color: context.appBackground,
       child: CustomScrollView(
         slivers: [
-          // Collapsible header with "Before the visit" title (desktop only)
           if (layout.showHeader)
             SliverAppBar(
               expandedHeight: AppConstants.headerExpandedHeight,
@@ -102,7 +119,6 @@ class _BeforeVisitPageState extends ConsumerState<BeforeVisitPage> {
               floating: false,
               backgroundColor: context.appBackground,
               automaticallyImplyLeading: false,
-              // Language selector in actions
               actions: [
                 Padding(
                   padding: const EdgeInsets.only(right: 16, top: 8),
@@ -126,74 +142,65 @@ class _BeforeVisitPageState extends ConsumerState<BeforeVisitPage> {
                 expandedTitleScale: layout.headerScale,
               ),
             ),
-          // Story sequence section - fits same width as grid below
+          // Story sequence — vertically centered on tablet+, top-aligned on phone
           SliverToBoxAdapter(
-            child: StorySequence(
-              items: DentalItems.beforeVisitStoryItems,
-              contentLanguage: contentLanguage,
-              speakingText: speakingText,
-              padding: layout.padding.copyWith(
-                top: layout.showHeader ? 16 : 24,
-                bottom: 0,
-              ),
-              onItemTap: (item) {
-                final translatedCaption = ContentTranslations.getCaption(
-                  item.id,
-                  contentLanguage,
-                );
-                // Log analytics events
-                final position = DentalItems.beforeVisitStoryItems.indexOf(item);
-                analytics.logStoryItemTapped(item.id, position);
-                analytics.logStoryTtsPlayed(item.id, contentLanguage.code);
-                // Play TTS
-                ttsService.speak(translatedCaption);
-              },
+            child: _buildStorySequence(
+              context, layout, contentLanguage, speakingText, analytics,
+              ttsService,
             ),
           ),
-          // Spacer between sections
-          const SliverToBoxAdapter(child: SizedBox(height: 32)),
-          // Tools grid section
-          SliverPadding(
-            padding: layout.padding,
-            sliver: SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: layout.columnCount,
-                mainAxisSpacing: layout.spacing,
-                crossAxisSpacing: layout.spacing,
-                childAspectRatio: layout.aspectRatio, // Responsive aspect ratio
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final item = DentalItems.beforeVisitToolsItems[index];
-                  final translatedCaption = ContentTranslations.getCaption(
-                    item.id,
-                    contentLanguage,
-                  );
-                  return LibraryCard(
-                    key: ValueKey(item.id),
-                    item: item,
-                    caption: translatedCaption,
-                    onTap: () {
-                      // Log analytics events
-                      analytics.logToolsItemTapped(item.id);
-                      analytics.logToolsTtsPlayed(item.id, contentLanguage.code);
-                      // Play TTS
-                      ttsService.speak(translatedCaption);
-                    },
-                    isSpeaking: speakingText == translatedCaption,
-                  );
-                },
-                childCount: DentalItems.beforeVisitToolsItems.length,
-                // Optimize memory for grids
-                addAutomaticKeepAlives: false,
-                addRepaintBoundaries: true,
-              ),
-            ),
-          ),
-          // Bottom padding
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
+    );
+  }
+
+  Widget _buildStorySequence(
+    BuildContext context,
+    GridLayout layout,
+    ContentLanguage contentLanguage,
+    String? speakingText,
+    AnalyticsService analytics,
+    TtsService ttsService,
+  ) {
+    // Check if StorySequence will render horizontally by computing the same
+    // available width it sees (content width minus horizontal padding).
+    // StorySequence uses 600px as its tablet breakpoint.
+    final contentWidth = Responsive.getContentWidth(context);
+    final horizontalPadding = layout.padding.left + layout.padding.right;
+    final storyAvailableWidth = contentWidth - horizontalPadding;
+    final isHorizontalLayout = storyAvailableWidth >= 600;
+
+    final topPadding = layout.showHeader ? 16.0 : 24.0;
+    EdgeInsets padding;
+    if (isHorizontalLayout) {
+      // Vertically center the horizontal story sequence on screen
+      final screenHeight = MediaQuery.of(context).size.height;
+      final headerHeight =
+          layout.showHeader ? AppConstants.headerExpandedHeight : 0.0;
+      final availableHeight = screenHeight - headerHeight;
+      const estimatedContentHeight = 260.0;
+      final verticalPad =
+          ((availableHeight - estimatedContentHeight) / 2).clamp(topPadding, double.infinity);
+      padding = layout.padding.copyWith(top: verticalPad, bottom: 24);
+    } else {
+      padding = layout.padding.copyWith(top: topPadding, bottom: 24);
+    }
+
+    return StorySequence(
+      items: _storyItems,
+      contentLanguage: contentLanguage,
+      speakingText: speakingText,
+      padding: padding,
+      onItemTap: (item) {
+        final translatedCaption = ContentTranslations.getCaption(
+          item.id,
+          contentLanguage,
+        );
+        final position = _storyItems.indexOf(item);
+        analytics.logStoryItemTapped(item.id, position);
+        analytics.logStoryTtsPlayed(item.id, contentLanguage.code);
+        ttsService.speak(translatedCaption);
+      },
     );
   }
 }

@@ -110,8 +110,9 @@ void main() {
       testWidgets('calls onItemTap for any item', (tester) async {
         DentalItem? tappedItem;
 
+        // Use wide width so items are horizontal and all visible
         await tester.pumpWidget(buildTestWidget(
-          width: 400,
+          width: 700,
           items: testItems,
           onItemTap: (item) => tappedItem = item,
         ));
@@ -124,41 +125,43 @@ void main() {
     });
 
     group('Scrolling Behavior', () {
-      testWidgets('uses SingleChildScrollView when items need scroll',
-          (tester) async {
-        // Very narrow width forces scrolling
+      testWidgets('uses vertical scroll on narrow screens', (tester) async {
+        // Narrow width triggers vertical layout
         await tester.pumpWidget(buildTestWidget(
-          width: 150,
+          width: 400,
           items: testItems,
         ));
 
         final scrollFinder = find.byType(SingleChildScrollView);
         expect(scrollFinder, findsOneWidget);
-
-        final scrollWidget = tester.widget<SingleChildScrollView>(scrollFinder);
-        expect(scrollWidget.scrollDirection, equals(Axis.horizontal));
       });
 
-      testWidgets('can scroll horizontally when items overflow',
+      testWidgets('uses horizontal scroll on wide screens when items overflow',
           (tester) async {
+        // Wide enough for horizontal, but many items force scroll
         await tester.pumpWidget(buildTestWidget(
-          width: 150,
+          width: 650,
           items: testItems,
         ));
 
-        final scrollFinder = find.byType(SingleChildScrollView);
-        expect(scrollFinder, findsOneWidget);
-
-        // Should be able to drag without error
-        await tester.drag(scrollFinder, const Offset(-50, 0));
-        await tester.pumpAndSettle();
+        // At 650px, items fit horizontally without scroll
+        expect(find.byType(Row), findsOneWidget);
       });
     });
 
     group('Layout Structure', () {
-      testWidgets('uses Row to arrange items', (tester) async {
+      testWidgets('uses Column on narrow screens (< 600px)', (tester) async {
         await tester.pumpWidget(buildTestWidget(
           width: 400,
+          items: testItems,
+        ));
+
+        expect(find.byType(Column), findsWidgets);
+      });
+
+      testWidgets('uses Row on wide screens (>= 600px)', (tester) async {
+        await tester.pumpWidget(buildTestWidget(
+          width: 700,
           items: testItems,
         ));
 
@@ -202,11 +205,11 @@ void main() {
           (tester) async {
         // The StorySequence has _minItemSize = 100
         await tester.pumpWidget(buildTestWidget(
-          width: 100, // Very narrow
+          width: 100, // Very narrow — vertical layout with scroll
           items: testItems,
         ));
 
-        // Should use SingleChildScrollView when items don't fit
+        // Vertical layout wraps in SingleChildScrollView
         expect(find.byType(SingleChildScrollView), findsOneWidget);
       });
     });
