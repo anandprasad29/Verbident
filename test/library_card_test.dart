@@ -357,6 +357,75 @@ void main() {
       expect(find.text(shortCaptionItem.caption), findsOneWidget);
     });
 
+    testWidgets('uses custom borderColor when provided', (tester) async {
+      const customColor = Colors.orange;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 200,
+                height: 280,
+                child: LibraryCard(
+                  item: testItem,
+                  borderColor: customColor,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final container = tester.widget<Container>(
+        find
+            .descendant(
+              of: find.byType(LibraryCard),
+              matching: find.byType(Container),
+            )
+            .first,
+      );
+
+      final decoration = container.decoration as BoxDecoration;
+      expect(decoration.border?.top.color, equals(customColor));
+    });
+
+    testWidgets('speaking color overrides borderColor', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 200,
+                height: 280,
+                child: LibraryCard(
+                  item: testItem,
+                  borderColor: Colors.orange,
+                  isSpeaking: true,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final container = tester.widget<Container>(
+        find
+            .descendant(
+              of: find.byType(LibraryCard),
+              matching: find.byType(Container),
+            )
+            .first,
+      );
+
+      final decoration = container.decoration as BoxDecoration;
+      // Speaking indicator color should take precedence over borderColor
+      expect(
+        decoration.border?.top.color,
+        equals(AppColors.speakingIndicator),
+      );
+    });
+
     testWidgets('does not trigger callback when onTap is null', (tester) async {
       await tester.pumpWidget(
         MaterialApp(

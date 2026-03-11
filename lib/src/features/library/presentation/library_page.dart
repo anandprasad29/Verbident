@@ -13,10 +13,12 @@ import '../../../widgets/app_shell.dart';
 import '../../../widgets/language_selector.dart';
 import '../services/tts_service.dart';
 import 'library_search_provider.dart';
+import 'widgets/category_header.dart';
 import 'widgets/library_card.dart';
 
 /// Library page displaying a scrollable grid of dental-related images
-/// with captions. Tapping an image triggers text-to-speech of the caption.
+/// with captions, organized by category sections.
+/// Tapping an image triggers text-to-speech of the caption.
 /// Includes search functionality with debouncing for performance.
 class LibraryPage extends ConsumerStatefulWidget {
   const LibraryPage({super.key});
@@ -71,7 +73,11 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     // Watch only what's needed for UI updates
     final contentLanguage = ref.watch(contentLanguageNotifierProvider);
     final searchInput = ref.watch(librarySearchInputProvider);
-    final filteredItems = ref.watch(filteredLibraryItemsProvider);
+    final groupedItems = ref.watch(groupedLibraryItemsProvider);
+
+    // Compute total filtered count for result display
+    final totalFilteredCount =
+        groupedItems.values.fold<int>(0, (sum, list) => sum + list.length);
 
     // Watch speaking text stream for UI feedback
     final speakingTextAsync = ref.watch(ttsSpeakingTextStreamProvider);
@@ -101,7 +107,8 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
         analytics,
         contentLanguage,
         speakingText,
-        filteredItems,
+        groupedItems,
+        totalFilteredCount,
         searchInput,
       ),
     );
@@ -113,7 +120,8 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     AnalyticsService analytics,
     ContentLanguage contentLanguage,
     String? speakingText,
-    List<DentalItem> filteredItems,
+    Map<String, List<DentalItem>> groupedItems,
+    int totalFilteredCount,
     String searchInput,
   ) {
     // Single MediaQuery call for all layout values (performance optimization)
@@ -173,15 +181,15 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
                   _buildResultCount(
                     context,
                     l10n,
-                    filteredItems.length,
+                    totalFilteredCount,
                     searchInput,
                   ),
                 ],
               ),
             ),
           ),
-          // Grid of library items or empty state
-          if (filteredItems.isEmpty)
+          // Sectioned category grids or empty state
+          if (groupedItems.isEmpty)
             SliverFillRemaining(
               hasScrollBody: false,
               child: Center(
@@ -203,48 +211,81 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
               ),
             )
           else
-            SliverPadding(
-              padding: layout.padding.copyWith(top: 0),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: layout.columnCount,
-                  mainAxisSpacing: layout.spacing,
-                  crossAxisSpacing: layout.spacing,
-                  childAspectRatio:
-                      layout.aspectRatio, // Responsive aspect ratio
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final item = filteredItems[index];
-                    final translatedCaption = ContentTranslations.getCaption(
-                      item.id,
-                      contentLanguage,
-                    );
-                    return LibraryCard(
-                      key: ValueKey(item.id),
-                      item: item,
-                      caption: translatedCaption,
-                      onTap: () {
-                        // Log analytics events
-                        analytics.logLibraryItemTapped(item.id);
-                        analytics.logLibraryTtsPlayed(
-                          item.id,
-                          contentLanguage.code,
-                        );
-                        // Play TTS
-                        ttsService.speak(translatedCaption);
-                      },
-                      isSpeaking: speakingText == translatedCaption,
-                    );
-                  },
-                  childCount: filteredItems.length,
-                  // Disable automatic keep-alives to reduce memory on large lists
-                  addAutomaticKeepAlives: false,
-                  // Keep repaint boundaries for scroll performance
-                  addRepaintBoundaries: true,
-                ),
-              ),
-            ),
+            ...groupedItems.entries.map((entry) {
+              final categoryId = entry.key;
+              final items = entry.value;
+              final categoryName = ContentTranslations.getCategoryName(
+                categoryId,
+                contentLanguage,
+              );
+              final categoryColor = AppColors.getCategoryColor(
+                categoryId,
+                isDark: context.isDarkMode,
+              );
+
+              return SliverMainAxisGroup(
+                slivers: [
+                  // Sticky category header (pinned within this group only)
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _CategoryHeaderDelegate(
+                      categoryId: categoryId,
+                      categoryName: categoryName,
+                      horizontalPadding: EdgeInsets.symmetric(
+                        horizontal: layout.padding.left,
+                      ),
+                      backgroundColor: context.appBackground,
+                      isDarkMode: context.isDarkMode,
+                    ),
+                  ),
+                  // Category grid
+                  SliverPadding(
+                    padding: EdgeInsets.only(
+                      left: layout.padding.left,
+                      right: layout.padding.right,
+                      top: AppConstants.categoryHeaderBottomGap,
+                      bottom: AppConstants.categorySectionSpacing,
+                    ),
+                    sliver: SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: layout.columnCount,
+                        mainAxisSpacing: layout.spacing,
+                        crossAxisSpacing: layout.spacing,
+                        childAspectRatio: layout.aspectRatio,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final item = items[index];
+                          final translatedCaption =
+                              ContentTranslations.getCaption(
+                            item.id,
+                            contentLanguage,
+                          );
+                          return LibraryCard(
+                            key: ValueKey(item.id),
+                            item: item,
+                            caption: translatedCaption,
+                            borderColor: categoryColor,
+                            onTap: () {
+                              analytics.logLibraryItemTapped(item.id);
+                              analytics.logLibraryTtsPlayed(
+                                item.id,
+                                contentLanguage.code,
+                              );
+                              ttsService.speak(translatedCaption);
+                            },
+                            isSpeaking: speakingText == translatedCaption,
+                          );
+                        },
+                        childCount: items.length,
+                        addAutomaticKeepAlives: false,
+                        addRepaintBoundaries: true,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
         ],
       ),
     );
@@ -330,5 +371,57 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
         ),
       ),
     );
+  }
+}
+
+class _CategoryHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final String categoryId;
+  final String categoryName;
+  final EdgeInsets horizontalPadding;
+  final Color backgroundColor;
+  final bool isDarkMode;
+
+  _CategoryHeaderDelegate({
+    required this.categoryId,
+    required this.categoryName,
+    required this.horizontalPadding,
+    required this.backgroundColor,
+    required this.isDarkMode,
+  });
+
+  @override
+  double get maxExtent => AppConstants.categoryHeaderHeight;
+
+  @override
+  double get minExtent => AppConstants.categoryHeaderHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    final isSticky = overlapsContent || shrinkOffset > 0;
+
+    return SizedBox.expand(
+      child: Container(
+        color: backgroundColor,
+        padding: horizontalPadding.copyWith(top: 4, bottom: 4),
+        child: CategoryHeader(
+          categoryId: categoryId,
+          categoryName: categoryName,
+          isSticky: isSticky,
+        ),
+      ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _CategoryHeaderDelegate oldDelegate) {
+    return categoryId != oldDelegate.categoryId ||
+        categoryName != oldDelegate.categoryName ||
+        horizontalPadding != oldDelegate.horizontalPadding ||
+        backgroundColor != oldDelegate.backgroundColor ||
+        isDarkMode != oldDelegate.isDarkMode;
   }
 }

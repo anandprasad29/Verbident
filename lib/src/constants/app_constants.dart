@@ -47,6 +47,11 @@ class AppConstants {
   static const double sidebarItemFontSize = 16.0;
   static const double captionFontSize = 14.0;
 
+  // Category section spacing
+  static const double categorySectionSpacing = 24.0;
+  static const double categoryHeaderHeight = 56.0;
+  static const double categoryHeaderBottomGap = 12.0;
+
   // Private constructor to prevent instantiation
   AppConstants._();
 }

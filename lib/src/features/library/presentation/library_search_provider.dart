@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/data/dental_items.dart';
 import '../../../common/domain/dental_item.dart';
@@ -43,10 +42,12 @@ class LibrarySearchNotifier extends StateNotifier<String> {
 
       // Log search analytics (only for non-empty queries)
       if (query.isNotEmpty) {
-        final resultsCount = _ref.read(filteredLibraryItemsProvider).length;
+        final grouped = _ref.read(groupedLibraryItemsProvider);
+        final totalCount =
+            grouped.values.fold<int>(0, (sum, list) => sum + list.length);
         _ref.read(analyticsServiceProvider).logLibrarySearch(
           query.length,
-          resultsCount,
+          totalCount,
         );
       }
     });
@@ -73,11 +74,7 @@ final librarySearchNotifierProvider =
 });
 
 /// Computed provider that returns filtered library items based on search query.
-/// This automatically recomputes when:
-/// - The debounced search query changes
-/// - The content language changes
-///
-/// The filtering is memoized - it won't recompute unless dependencies change.
+/// Kept for backward compatibility with other features.
 final filteredLibraryItemsProvider = Provider<List<DentalItem>>((ref) {
   final query = ref.watch(librarySearchQueryProvider);
   final language = ref.watch(contentLanguageNotifierProvider);
@@ -91,4 +88,33 @@ final filteredLibraryItemsProvider = Provider<List<DentalItem>>((ref) {
     final caption = ContentTranslations.getCaption(item.id, language);
     return caption.toLowerCase().contains(lowerQuery);
   }).toList();
+});
+
+/// Computed provider that returns items grouped by category, with search filter applied.
+/// Categories with 0 matching items are excluded from the map.
+/// Category order follows [DentalItems.categories].
+final groupedLibraryItemsProvider =
+    Provider<Map<String, List<DentalItem>>>((ref) {
+  final query = ref.watch(librarySearchQueryProvider);
+  final language = ref.watch(contentLanguageNotifierProvider);
+  final lowerQuery = query.toLowerCase();
+
+  final grouped = <String, List<DentalItem>>{};
+
+  for (final categoryId in DentalItems.categories) {
+    final categoryItems = DentalItems.getByCategory(categoryId);
+
+    final filtered = query.isEmpty
+        ? categoryItems
+        : categoryItems.where((item) {
+            final caption = ContentTranslations.getCaption(item.id, language);
+            return caption.toLowerCase().contains(lowerQuery);
+          }).toList();
+
+    if (filtered.isNotEmpty) {
+      grouped[categoryId] = filtered;
+    }
+  }
+
+  return grouped;
 });

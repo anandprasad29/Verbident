@@ -154,15 +154,15 @@ void main() {
     });
 
     test('items have meaningful ids', () {
+      // Verify items are grouped by category (first category is actions-and-objects)
       final expectedFirstIds = [
-        'dental-mirror',
-        'dental-drill',
-        'suction',
-        'open-mouth',
-        'stop',
+        'toothbrush',
+        'floss',
+        'water',
+        'toothpaste',
+        'tooth',
       ];
 
-      // Verify original items are still first in the list
       for (int i = 0; i < expectedFirstIds.length; i++) {
         expect(DentalItems.all[i].id, equals(expectedFirstIds[i]));
       }
@@ -196,6 +196,79 @@ void main() {
       final list1 = DentalItems.all;
       final list2 = DentalItems.all;
       expect(identical(list1, list2), isTrue);
+    });
+  });
+
+  group('DentalItem Category', () {
+    test('all items have a non-empty category', () {
+      for (final item in DentalItems.all) {
+        expect(
+          item.category.isNotEmpty,
+          isTrue,
+          reason: 'Item "${item.id}" should have a category',
+        );
+      }
+    });
+
+    test('category is included in equality', () {
+      const item1 = LibraryItem(
+        id: 'test',
+        imagePath: 'path',
+        caption: 'caption',
+        category: 'cat-a',
+      );
+      const item2 = LibraryItem(
+        id: 'test',
+        imagePath: 'path',
+        caption: 'caption',
+        category: 'cat-b',
+      );
+
+      expect(item1 == item2, isFalse);
+    });
+  });
+
+  group('DentalItems.categories', () {
+    test('contains all four category IDs', () {
+      expect(DentalItems.categories, hasLength(4));
+      expect(DentalItems.categories, contains('actions-and-objects'));
+      expect(DentalItems.categories, contains('instructional-words'));
+      expect(DentalItems.categories, contains('expression'));
+      expect(DentalItems.categories, contains('non-dental'));
+    });
+
+    test('every item belongs to a known category', () {
+      for (final item in DentalItems.all) {
+        expect(
+          DentalItems.categories.contains(item.category),
+          isTrue,
+          reason: 'Item "${item.id}" has unknown category "${item.category}"',
+        );
+      }
+    });
+  });
+
+  group('DentalItems.getByCategory', () {
+    test('returns correct items for each category', () {
+      for (final categoryId in DentalItems.categories) {
+        final items = DentalItems.getByCategory(categoryId);
+        expect(items, isNotEmpty, reason: '$categoryId should have items');
+        for (final item in items) {
+          expect(item.category, equals(categoryId));
+        }
+      }
+    });
+
+    test('all items are accounted for across categories', () {
+      int total = 0;
+      for (final categoryId in DentalItems.categories) {
+        total += DentalItems.getByCategory(categoryId).length;
+      }
+      expect(total, equals(DentalItems.all.length));
+    });
+
+    test('returns empty list for unknown category', () {
+      expect(DentalItems.getByCategory('nonexistent'), isEmpty);
     });
   });
 }

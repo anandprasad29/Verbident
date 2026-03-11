@@ -4,11 +4,13 @@ class DentalItem {
   final String id;
   final String imagePath;
   final String caption;
+  final String category;
 
   const DentalItem({
     required this.id,
     required this.imagePath,
     required this.caption,
+    this.category = '',
   });
 
   @override
@@ -18,15 +20,10 @@ class DentalItem {
           runtimeType == other.runtimeType &&
           id == other.id &&
           imagePath == other.imagePath &&
-          caption == other.caption;
+          caption == other.caption &&
+          category == other.category;
 
   @override
-  int get hashCode => id.hashCode ^ imagePath.hashCode ^ caption.hashCode;
+  int get hashCode =>
+      id.hashCode ^ imagePath.hashCode ^ caption.hashCode ^ category.hashCode;
 }
-
-
-
-
-
-
-

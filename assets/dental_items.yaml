@@ -5,103 +5,136 @@
 
 # All dental items available in the app
 dental_items:
-  # Dental tools and actions
-  - id: dental-mirror
-    image: dental_mirror.webp
-    caption: This is a mirror
-
-  - id: dental-drill
-    image: dental_drill.webp
-    caption: "This is the dentist's drill"
-
-  - id: suction
-    image: suction.webp
-    caption: This is a suction
-
-  - id: open-mouth
-    image: open_mouth.webp
-    caption: Open your mouth
-
-  - id: stop
-    image: stop.webp
-    caption: Stop
-
-  # Communication and actions
-  - id: all-done
-    image: all_done.webp
-    caption: All done
-
-  - id: bite-down
-    image: bite_down.webp
-    caption: Bite down
-
-  - id: break
-    image: break.webp
-    caption: Break
-
-  - id: close-your-mouth
-    image: close_your_mouth.webp
-    caption: Close your mouth
-
-  - id: do-not-swallow
-    image: do_not_swallow.webp
-    caption: Do not swallow
+  # === Actions & Objects ===
+  - id: toothbrush
+    image: toothbrush.webp
+    caption: Toothbrush
+    category: actions-and-objects
 
   - id: floss
     image: floss.webp
     caption: Floss
-
-  - id: hands-on-the-side
-    image: hands_on_the_side.webp
-    caption: Hands on the side
-
-  - id: hurt
-    image: hurt.webp
-    caption: Hurt
-
-  - id: i-dont-like-that
-    image: i_dont_like_that.webp
-    caption: "I don't like that"
-
-  - id: mad
-    image: mad.webp
-    caption: Mad
-
-  - id: "no"
-    image: no.webp
-    caption: "No"
-
-  - id: spit-out
-    image: spit_out.webp
-    caption: Spit out
-
-  - id: tired
-    image: tired.webp
-    caption: Tired
-
-  - id: tongue
-    image: tongue.webp
-    caption: Tongue
-
-  - id: tooth
-    image: tooth.webp
-    caption: Tooth
-
-  - id: toothbrush
-    image: toothbrush.webp
-    caption: Toothbrush
-
-  - id: toothpaste
-    image: toothpaste.webp
-    caption: Toothpaste
+    category: actions-and-objects
 
   - id: water
     image: water.webp
     caption: Water
+    category: actions-and-objects
+
+  - id: toothpaste
+    image: toothpaste.webp
+    caption: Toothpaste
+    category: actions-and-objects
+
+  - id: tooth
+    image: tooth.webp
+    caption: Tooth
+    category: actions-and-objects
+
+  - id: tongue
+    image: tongue.webp
+    caption: Tongue
+    category: actions-and-objects
+
+  - id: dental-mirror
+    image: dental_mirror.webp
+    caption: This is a mirror
+    category: actions-and-objects
+
+  - id: dental-drill
+    image: dental_drill.webp
+    caption: This is the Drill
+    category: actions-and-objects
+
+  # === Instructional Words ===
+  - id: spit-out
+    image: spit_out.webp
+    caption: Spit out
+    category: instructional-words
+
+  - id: do-not-swallow
+    image: do_not_swallow.webp
+    caption: Do not swallow
+    category: instructional-words
+
+  - id: hands-on-the-side
+    image: hands_on_the_side.webp
+    caption: Hands on the side
+    category: instructional-words
+
+  - id: bite-down
+    image: bite_down.webp
+    caption: Bite down
+    category: instructional-words
+
+  - id: open-mouth
+    image: open_mouth.webp
+    caption: Open your mouth
+    category: instructional-words
+
+  - id: close-your-mouth
+    image: close_your_mouth.webp
+    caption: Close your mouth
+    category: instructional-words
+
+  - id: suction
+    image: suction.webp
+    caption: This is a suction
+    category: instructional-words
+
+  # === Expression ===
+  - id: hurt
+    image: hurt.webp
+    caption: Hurt
+    category: expression
+
+  - id: mad
+    image: mad.webp
+    caption: Mad
+    category: expression
+
+  - id: tired
+    image: tired.webp
+    caption: Tired
+    category: expression
+
+  # === Non-Dental ===
+  - id: stop
+    image: stop.webp
+    caption: Stop
+    category: non-dental
+
+  - id: all-done
+    image: all_done.webp
+    caption: All done
+    category: non-dental
+
+  - id: break
+    image: break.webp
+    caption: Break
+    category: non-dental
 
   - id: "yes"
     image: yes.webp
     caption: "Yes"
+    category: non-dental
+
+  - id: "no"
+    image: no.webp
+    caption: "No"
+    category: non-dental
+
+  - id: i-dont-like-that
+    image: i_dont_like_that.webp
+    caption: "I don't like that"
+    category: non-dental
+
+# Category display order
+categories:
+  - actions-and-objects
+  - instructional-words
+  - expression
+  - non-dental
 
 # IDs for the "During Visit" items grid
 # These items are shown as a flat image grid

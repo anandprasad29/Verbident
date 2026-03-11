@@ -212,4 +212,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsTestSpeechSample => 'Hello! This is a test.';
+
+  @override
+  String get categorySectionActions => 'Actions & Objects';
+
+  @override
+  String get categorySectionInstructional => 'Instructional Words';
+
+  @override
+  String get categorySectionExpression => 'Expression';
+
+  @override
+  String get categorySectionNonDental => 'Non-Dental';
 }

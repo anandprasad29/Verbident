@@ -269,5 +269,21 @@
   "settingsTestSpeechSample": "Hello! This is a test.",
   "@settingsTestSpeechSample": {
     "description": "Sample text for TTS test"
+  },
+  "categorySectionActions": "Actions & Objects",
+  "@categorySectionActions": {
+    "description": "Category header for actions and objects"
+  },
+  "categorySectionInstructional": "Instructional Words",
+  "@categorySectionInstructional": {
+    "description": "Category header for instructional words"
+  },
+  "categorySectionExpression": "Expression",
+  "@categorySectionExpression": {
+    "description": "Category header for expression items"
+  },
+  "categorySectionNonDental": "Non-Dental",
+  "@categorySectionNonDental": {
+    "description": "Category header for non-dental items"
   }
 }

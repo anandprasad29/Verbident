@@ -27,8 +27,15 @@ void main() async {
       'id': item['id'] as String,
       'image': item['image'] as String,
       'caption': item['caption'] as String,
+      'category': (item['category'] as String?) ?? '',
     });
   }
+
+  // Parse category order
+  final categories = (yaml['categories'] as YamlList?)
+          ?.map((e) => e as String)
+          .toList() ??
+      <String>[];
 
   // Parse during visit items IDs
   final duringVisitItems = (yaml['during_visit_items'] as YamlList)
@@ -64,9 +71,19 @@ void main() async {
     buffer.writeln("      id: '${item['id']}',");
     buffer.writeln("      imagePath: 'assets/images/library/${item['image']}',");
     buffer.writeln("      caption: ${_escapeDartString(item['caption']!)},");
+    buffer.writeln("      category: '${item['category']}',");
     buffer.writeln("    ),");
   }
 
+  buffer.writeln("  ];");
+  buffer.writeln();
+
+  // Generate ordered category list
+  buffer.writeln("  /// Ordered list of category IDs for display.");
+  buffer.writeln("  static const List<String> categories = [");
+  for (final cat in categories) {
+    buffer.writeln("    '$cat',");
+  }
   buffer.writeln("  ];");
   buffer.writeln();
 
@@ -102,6 +119,12 @@ void main() async {
   buffer.writeln("  static DentalItem? getById(String id) => _itemMap[id];");
   buffer.writeln();
 
+  buffer.writeln("  /// Get items filtered by category.");
+  buffer.writeln("  static List<DentalItem> getByCategory(String category) {");
+  buffer.writeln("    return all.where((item) => item.category == category).toList();");
+  buffer.writeln("  }");
+  buffer.writeln();
+
   buffer.writeln("  /// Get items for the During Visit items grid.");
   buffer.writeln("  static List<DentalItem> get duringVisitItems =>");
   buffer.writeln("      getByIds(duringVisitIds);");
@@ -118,6 +141,7 @@ void main() async {
   await outputFile.writeAsString(buffer.toString());
 
   print('✅ Generated ${items.length} dental items');
+  print('✅ Categories: ${categories.length} (${categories.join(', ')})');
   print('✅ During Visit: ${duringVisitItems.length} items');
   print('✅ Output: ${outputFile.path}');
 }

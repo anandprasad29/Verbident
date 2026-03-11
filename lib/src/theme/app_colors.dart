@@ -103,6 +103,58 @@ class AppColors {
   static const Color skeletonBaseDark = Color(0xFF2A2A36);
   static const Color skeletonHighlightDark = Color(0xFF3A3A46);
 
+  // ============================================
+  // CATEGORY COLORS
+  // ============================================
+
+  // Actions & Objects — green/teal
+  static const Color categoryActions = Color(0xFF26A69A);
+  static const Color categoryActionsDark = Color(0xFF4DB6AC);
+
+  // Instructional Words — blue/purple
+  static const Color categoryInstructional = Color(0xFF5C6BC0);
+  static const Color categoryInstructionalDark = Color(0xFF7986CB);
+
+  // Expression — orange/warm
+  static const Color categoryExpression = Color(0xFFFF7043);
+  static const Color categoryExpressionDark = Color(0xFFFF8A65);
+
+  // Non-Dental — pink/neutral
+  static const Color categoryNonDental = Color(0xFFEC407A);
+  static const Color categoryNonDentalDark = Color(0xFFF06292);
+
+  /// Get category color by category ID.
+  static Color getCategoryColor(String categoryId, {bool isDark = false}) {
+    switch (categoryId) {
+      case 'actions-and-objects':
+        return isDark ? categoryActionsDark : categoryActions;
+      case 'instructional-words':
+        return isDark ? categoryInstructionalDark : categoryInstructional;
+      case 'expression':
+        return isDark ? categoryExpressionDark : categoryExpression;
+      case 'non-dental':
+        return isDark ? categoryNonDentalDark : categoryNonDental;
+      default:
+        return isDark ? primaryDarkMode : primary;
+    }
+  }
+
+  /// Get category icon by category ID.
+  static IconData getCategoryIcon(String categoryId) {
+    switch (categoryId) {
+      case 'actions-and-objects':
+        return Icons.brush;
+      case 'instructional-words':
+        return Icons.front_hand;
+      case 'expression':
+        return Icons.sentiment_dissatisfied;
+      case 'non-dental':
+        return Icons.chat_bubble_outline;
+      default:
+        return Icons.category;
+    }
+  }
+
   // Private constructor to prevent instantiation
   AppColors._();
 }

@@ -6,8 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:verbident/src/common/data/dental_items.dart';
+import 'package:verbident/src/common/domain/dental_item.dart';
 import 'package:verbident/src/features/library/presentation/library_page.dart';
 import 'package:verbident/src/features/library/presentation/library_search_provider.dart';
+import 'package:verbident/src/features/library/presentation/widgets/category_header.dart';
 import 'package:verbident/src/features/library/presentation/widgets/library_card.dart';
 import 'package:verbident/src/localization/content_language_provider.dart';
 
@@ -112,12 +114,12 @@ void main() {
         ),
       );
 
-      // Find the SliverGrid
+      // Find the SliverGrids (one per category)
       final gridFinder = find.byType(SliverGrid);
-      expect(gridFinder, findsOneWidget);
+      expect(gridFinder, findsWidgets);
 
-      // Verify grid has 5 columns by checking the delegate
-      final grid = tester.widget<SliverGrid>(gridFinder);
+      // Verify first grid has 5 columns by checking the delegate
+      final grid = tester.widget<SliverGrid>(gridFinder.first);
       final delegate =
           grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
       expect(delegate.crossAxisCount, equals(5));
@@ -139,12 +141,12 @@ void main() {
         ),
       );
 
-      // Find the SliverGrid
+      // Find the SliverGrids (one per category)
       final gridFinder = find.byType(SliverGrid);
-      expect(gridFinder, findsOneWidget);
+      expect(gridFinder, findsWidgets);
 
-      // Verify grid has 3 columns
-      final grid = tester.widget<SliverGrid>(gridFinder);
+      // Verify first grid has 3 columns
+      final grid = tester.widget<SliverGrid>(gridFinder.first);
       final delegate =
           grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
       expect(delegate.crossAxisCount, equals(3));
@@ -166,12 +168,12 @@ void main() {
         ),
       );
 
-      // Find the SliverGrid
+      // Find the SliverGrids (one per category)
       final gridFinder = find.byType(SliverGrid);
-      expect(gridFinder, findsOneWidget);
+      expect(gridFinder, findsWidgets);
 
-      // Verify grid has 2 columns
-      final grid = tester.widget<SliverGrid>(gridFinder);
+      // Verify first grid has 2 columns
+      final grid = tester.widget<SliverGrid>(gridFinder.first);
       final delegate =
           grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
       expect(delegate.crossAxisCount, equals(2));
@@ -290,7 +292,7 @@ void main() {
 
       // Verify at least some dental-related captions are present
       expect(
-        find.textContaining('dentist'),
+        find.textContaining('Toothbrush'),
         findsWidgets,
       );
 
@@ -313,6 +315,46 @@ void main() {
 
       // Sidebar should be visible via AppShell
       expect(find.text('Library'), findsAtLeast(1)); // In sidebar and header
+
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    testWidgets('renders CategoryHeader widgets for each category',
+        (tester) async {
+      tester.view.physicalSize = const Size(1450, 900);
+      tester.view.devicePixelRatio = 1.0;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp.router(
+            routerConfig: createTestRouter(),
+          ),
+        ),
+      );
+
+      // CategoryHeader widgets should be rendered (one per visible category)
+      expect(find.byType(CategoryHeader), findsWidgets);
+
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    testWidgets('renders SliverMainAxisGroup for category sections',
+        (tester) async {
+      tester.view.physicalSize = const Size(1450, 900);
+      tester.view.devicePixelRatio = 1.0;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp.router(
+            routerConfig: createTestRouter(),
+          ),
+        ),
+      );
+
+      // SliverMainAxisGroup should be rendered (one per category)
+      expect(find.byType(SliverMainAxisGroup), findsWidgets);
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -349,7 +391,7 @@ void main() {
         ),
       );
 
-      final grid = tester.widget<SliverGrid>(find.byType(SliverGrid));
+      final grid = tester.widget<SliverGrid>(find.byType(SliverGrid).first);
       final delegate =
           grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
 
@@ -372,7 +414,7 @@ void main() {
         ),
       );
 
-      final grid = tester.widget<SliverGrid>(find.byType(SliverGrid));
+      final grid = tester.widget<SliverGrid>(find.byType(SliverGrid).first);
       final delegate =
           grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
 
@@ -544,7 +586,7 @@ void main() {
       expect(find.byIcon(Icons.clear), findsNothing);
 
       // Enter search text
-      await tester.enterText(find.byType(TextField), 'dentist');
+      await tester.enterText(find.byType(TextField), 'mirror');
       await tester.pump();
 
       // Clear button should appear
@@ -567,7 +609,7 @@ void main() {
       );
 
       // Enter search text
-      await tester.enterText(find.byType(TextField), 'dentist');
+      await tester.enterText(find.byType(TextField), 'mirror');
       await tester.pump();
 
       // Tap clear button
@@ -638,7 +680,7 @@ void main() {
       expect(find.textContaining('items'), findsNothing);
 
       // Enter search text that matches multiple items
-      await tester.enterText(find.byType(TextField), 'dentist');
+      await tester.enterText(find.byType(TextField), 'mirror');
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pumpAndSettle();
 
@@ -697,7 +739,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Enter search text
-      await tester.enterText(find.byType(TextField), 'dentist');
+      await tester.enterText(find.byType(TextField), 'mirror');
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pumpAndSettle();
 
@@ -832,6 +874,68 @@ void main() {
       final items = container.read(filteredLibraryItemsProvider);
       expect(items.length, equals(1));
       expect(items.first.id, equals('dental-mirror'));
+    });
+
+    test('groupedLibraryItemsProvider returns all categories when query is empty',
+        () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final grouped = container.read(groupedLibraryItemsProvider);
+      expect(grouped.keys, hasLength(DentalItems.categories.length));
+      for (final categoryId in DentalItems.categories) {
+        expect(grouped.containsKey(categoryId), isTrue);
+        expect(grouped[categoryId], isNotEmpty);
+      }
+    });
+
+    test('groupedLibraryItemsProvider preserves category order', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final grouped = container.read(groupedLibraryItemsProvider);
+      expect(grouped.keys.toList(), equals(DentalItems.categories));
+    });
+
+    test('groupedLibraryItemsProvider excludes empty categories on search', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Search for something that exists in only one category
+      container.read(librarySearchQueryProvider.notifier).state = 'mirror';
+
+      final grouped = container.read(groupedLibraryItemsProvider);
+      // Should only contain categories with matching items
+      expect(grouped.keys.length, lessThan(DentalItems.categories.length));
+      for (final items in grouped.values) {
+        expect(items, isNotEmpty);
+      }
+    });
+
+    test('groupedLibraryItemsProvider returns empty map for no matches', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      container.read(librarySearchQueryProvider.notifier).state =
+          'xyznonexistent';
+
+      final grouped = container.read(groupedLibraryItemsProvider);
+      expect(grouped, isEmpty);
+    });
+
+    test('groupedLibraryItemsProvider total matches filteredLibraryItemsProvider',
+        () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      container.read(librarySearchQueryProvider.notifier).state = 'tooth';
+
+      final grouped = container.read(groupedLibraryItemsProvider);
+      final filtered = container.read(filteredLibraryItemsProvider);
+
+      final groupedTotal =
+          grouped.values.fold<int>(0, (sum, list) => sum + list.length);
+      expect(groupedTotal, equals(filtered.length));
     });
 
     test('LibrarySearchNotifier clearSearch clears both providers', () {
