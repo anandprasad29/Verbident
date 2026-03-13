@@ -135,6 +135,19 @@ class CustomTemplatesNotifier extends _$CustomTemplatesNotifier {
     }
   }
 
+  /// Generates a default template name like "Template 1", "Template 2", etc.
+  /// Skips names already in use.
+  String generateDefaultName() {
+    final existing = state;
+    int counter = existing.length + 1;
+    String candidate = 'Template $counter';
+    while (existing.any((t) => t.name.toLowerCase() == candidate.toLowerCase())) {
+      counter++;
+      candidate = 'Template $counter';
+    }
+    return candidate;
+  }
+
   /// Gets a template by ID
   CustomTemplate? getTemplate(String templateId) {
     try {
@@ -236,9 +249,8 @@ final filteredBuildOwnItemsProvider = Provider<List<DentalItem>>((ref) {
 
 /// Helper provider to check if template creation is valid
 final canCreateTemplateProvider = Provider<bool>((ref) {
-  final name = ref.watch(buildOwnTemplateNameProvider);
   final selectedIds = ref.watch(buildOwnSelectedIdsProvider);
-  return name.trim().isNotEmpty && selectedIds.isNotEmpty;
+  return selectedIds.isNotEmpty;
 });
 
 /// Helper provider for selection count

@@ -91,14 +91,14 @@ void main() {
       expect(maxTemplateCount, 10);
     });
 
-    test('canCreateTemplateProvider returns false when name is empty', () {
+    test('canCreateTemplateProvider returns true when name is empty but items selected', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
       container.read(buildOwnTemplateNameProvider.notifier).state = '';
       container.read(buildOwnSelectedIdsProvider.notifier).state = {'item1'};
 
-      expect(container.read(canCreateTemplateProvider), false);
+      expect(container.read(canCreateTemplateProvider), true);
     });
 
     test('canCreateTemplateProvider returns false when no items selected', () {
@@ -111,7 +111,7 @@ void main() {
       expect(container.read(canCreateTemplateProvider), false);
     });
 
-    test('canCreateTemplateProvider returns true when valid', () {
+    test('canCreateTemplateProvider returns true when name and items provided', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -119,6 +119,16 @@ void main() {
       container.read(buildOwnSelectedIdsProvider.notifier).state = {'item1'};
 
       expect(container.read(canCreateTemplateProvider), true);
+    });
+
+    test('canCreateTemplateProvider returns false when no name and no items', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      container.read(buildOwnTemplateNameProvider.notifier).state = '';
+      container.read(buildOwnSelectedIdsProvider.notifier).state = {};
+
+      expect(container.read(canCreateTemplateProvider), false);
     });
 
     test('buildOwnSelectionCountProvider returns correct count', () {
@@ -145,6 +155,102 @@ void main() {
       expect(items.length, 2);
       expect(items[0].id, 'dental-mirror');
       expect(items[1].id, 'dental-drill');
+    });
+  });
+
+  group('generateDefaultName', () {
+    /// Helper to create a ProviderContainer pre-seeded with templates in storage.
+    /// Waits for async initialization to complete.
+    Future<ProviderContainer> createSeededContainer(
+        List<CustomTemplate> templates) async {
+      final templatesJson =
+          jsonEncode(templates.map((t) => t.toJson()).toList());
+      SharedPreferences.setMockInitialValues(
+          templates.isEmpty ? {} : {'custom_templates': templatesJson});
+      final container = ProviderContainer();
+      // Access the notifier to trigger build() and _initializeAsync
+      container.read(customTemplatesNotifierProvider.notifier);
+      // Wait for async initialization to settle
+      await Future.delayed(const Duration(milliseconds: 100));
+      return container;
+    }
+
+    test('generates "Template 1" when no templates exist', () async {
+      final container = await createSeededContainer([]);
+      addTearDown(container.dispose);
+
+      final notifier = container.read(customTemplatesNotifierProvider.notifier);
+      expect(notifier.generateDefaultName(), 'Template 1');
+    });
+
+    test('generates next number based on count', () async {
+      final container = await createSeededContainer([
+        CustomTemplate(
+          id: '1',
+          name: 'My Custom',
+          selectedItemIds: ['a'],
+          createdAt: DateTime(2024, 1, 1),
+        ),
+      ]);
+      addTearDown(container.dispose);
+
+      final notifier = container.read(customTemplatesNotifierProvider.notifier);
+      // With 1 existing template, starts at "Template 2"
+      expect(notifier.generateDefaultName(), 'Template 2');
+    });
+
+    test('skips names already in use', () async {
+      final container = await createSeededContainer([
+        CustomTemplate(
+          id: '1',
+          name: 'Template 1',
+          selectedItemIds: ['a'],
+          createdAt: DateTime(2024, 1, 1),
+        ),
+      ]);
+      addTearDown(container.dispose);
+
+      final notifier = container.read(customTemplatesNotifierProvider.notifier);
+      // "Template 1" exists, count is 1, candidate "Template 1" skips to "Template 2"
+      expect(notifier.generateDefaultName(), 'Template 2');
+    });
+
+    test('skips multiple used names', () async {
+      final container = await createSeededContainer([
+        CustomTemplate(
+          id: '1',
+          name: 'Template 1',
+          selectedItemIds: ['a'],
+          createdAt: DateTime(2024, 1, 1),
+        ),
+        CustomTemplate(
+          id: '2',
+          name: 'Template 2',
+          selectedItemIds: ['b'],
+          createdAt: DateTime(2024, 1, 2),
+        ),
+      ]);
+      addTearDown(container.dispose);
+
+      final notifier = container.read(customTemplatesNotifierProvider.notifier);
+      // count=2, candidate "Template 2" exists → counter=3, "Template 3"
+      expect(notifier.generateDefaultName(), 'Template 3');
+    });
+
+    test('is case-insensitive when checking duplicates', () async {
+      final container = await createSeededContainer([
+        CustomTemplate(
+          id: '1',
+          name: 'template 1',
+          selectedItemIds: ['a'],
+          createdAt: DateTime(2024, 1, 1),
+        ),
+      ]);
+      addTearDown(container.dispose);
+
+      final notifier = container.read(customTemplatesNotifierProvider.notifier);
+      // "Template 1" matches "template 1" case-insensitively → "Template 2"
+      expect(notifier.generateDefaultName(), 'Template 2');
     });
   });
 

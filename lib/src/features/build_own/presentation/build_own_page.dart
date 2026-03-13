@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -57,11 +59,16 @@ class _BuildOwnPageState extends ConsumerState<BuildOwnPage> {
 
   Future<void> _createTemplate() async {
     final l10n = AppLocalizations.of(context);
-    final name = ref.read(buildOwnTemplateNameProvider).trim();
+    var name = ref.read(buildOwnTemplateNameProvider).trim();
     final selectedIds = ref.read(buildOwnSelectedIdsProvider);
     final notifier = ref.read(customTemplatesNotifierProvider.notifier);
 
-    if (name.isEmpty || selectedIds.isEmpty) return;
+    if (selectedIds.isEmpty) return;
+
+    // Auto-generate name if not provided
+    if (name.isEmpty) {
+      name = notifier.generateDefaultName();
+    }
 
     // Check template limit
     if (notifier.isAtLimit) {
@@ -497,39 +504,59 @@ class _BuildOwnPageState extends ConsumerState<BuildOwnPage> {
     bool canCreate,
     int selectionCount,
   ) {
-    return FloatingActionButton.extended(
-      onPressed: canCreate ? _createTemplate : null,
-      backgroundColor: canCreate ? context.appPrimary : context.appNeutral,
-      icon: const Icon(Icons.check, color: Colors.white),
-      label: Row(
-        children: [
-          Text(
-            l10n?.createTemplate ?? 'Create Template',
-            style: const TextStyle(
-              fontFamily: 'InstrumentSans',
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          if (selectionCount > 0) ...[
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '$selectionCount',
-                style: const TextStyle(
-                  fontFamily: 'InstrumentSans',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Material(
+            color: (canCreate ? context.appPrimary : context.appNeutral)
+                .withValues(alpha: 0.7),
+            child: InkWell(
+              onTap: canCreate ? _createTemplate : null,
+              borderRadius: BorderRadius.circular(28),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.check, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n?.createTemplate ?? 'Create Template',
+                      style: const TextStyle(
+                        fontFamily: 'InstrumentSans',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    if (selectionCount > 0) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '$selectionCount',
+                          style: const TextStyle(
+                            fontFamily: 'InstrumentSans',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
-          ],
-        ],
+          ),
+        ),
       ),
     );
   }
