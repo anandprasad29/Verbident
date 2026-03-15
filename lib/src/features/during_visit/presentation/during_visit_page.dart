@@ -58,6 +58,7 @@ class _DuringVisitPageState extends ConsumerState<DuringVisitPage> {
     });
 
     return AppShell(
+      showHomeButton: true,
       child: _buildContent(
         context,
         ttsService,

@@ -88,6 +88,7 @@ class _BeforeVisitPageState extends ConsumerState<BeforeVisitPage> {
     });
 
     return AppShell(
+      showHomeButton: true,
       child: _buildContent(
         context,
         ttsService,

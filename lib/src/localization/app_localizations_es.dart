@@ -228,4 +228,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get categorySectionNonDental => 'No dental';
+
+  @override
+  String get dashboardWelcome => '¿Qué te gustaría hacer?';
+
+  @override
+  String get dashboardBeforeVisit => 'Antes de la visita';
+
+  @override
+  String get dashboardDuringVisit => 'Durante la visita';
+
+  @override
+  String get dashboardLibrary => 'Biblioteca';
+
+  @override
+  String get dashboardBuildOwn => 'Crea el tuyo';
+
+  @override
+  String get dashboardMyTemplates => 'Mis plantillas';
+
+  @override
+  String get dashboardCreateNew => 'Crear nueva';
 }

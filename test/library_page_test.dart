@@ -69,7 +69,7 @@ void main() {
   }
 
   group('LibraryPage Widget Tests', () {
-    testWidgets('renders Library header in SliverAppBar', (tester) async {
+    testWidgets('renders AppBar from AppShell (no SliverAppBar)', (tester) async {
       tester.view.physicalSize = const Size(1450, 900);
       tester.view.devicePixelRatio = 1.0;
 
@@ -81,21 +81,12 @@ void main() {
         ),
       );
 
-      // Find the SliverAppBar
-      expect(find.byType(SliverAppBar), findsOneWidget);
+      // SliverAppBar is no longer used — showHeader is always false
+      expect(find.byType(SliverAppBar), findsNothing);
+      expect(find.byType(FlexibleSpaceBar), findsNothing);
 
-      // Find the Library header text within FlexibleSpaceBar
-      final flexSpaceBarFinder = find.byType(FlexibleSpaceBar);
-      expect(flexSpaceBarFinder, findsOneWidget);
-
-      // Verify the title text exists within the FlexibleSpaceBar
-      expect(
-        find.descendant(
-          of: flexSpaceBarFinder,
-          matching: find.text('Library'),
-        ),
-        findsOneWidget,
-      );
+      // AppShell provides a regular AppBar instead
+      expect(find.byType(AppBar), findsOneWidget);
 
       // Reset view
       tester.view.resetPhysicalSize();
@@ -203,7 +194,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('uses SliverAppBar for collapsible header', (tester) async {
+    testWidgets('shows home and settings icons in AppShell AppBar', (tester) async {
       tester.view.physicalSize = const Size(1450, 900);
       tester.view.devicePixelRatio = 1.0;
 
@@ -215,20 +206,18 @@ void main() {
         ),
       );
 
-      // Verify SliverAppBar is present
-      final appBarFinder = find.byType(SliverAppBar);
-      expect(appBarFinder, findsOneWidget);
-
-      // Verify SliverAppBar is pinned (stays visible when scrolled)
-      final appBar = tester.widget<SliverAppBar>(appBarFinder);
-      expect(appBar.pinned, isTrue);
+      // SliverAppBar is no longer used — AppShell provides a simple AppBar
+      expect(find.byType(SliverAppBar), findsNothing);
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.byIcon(Icons.settings), findsOneWidget);
 
       // Reset view
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('header collapses on scroll', (tester) async {
+    testWidgets('AppBar remains visible after scroll (no collapsible header)', (tester) async {
       tester.view.physicalSize = const Size(1450, 900);
       tester.view.devicePixelRatio = 1.0;
 
@@ -240,18 +229,15 @@ void main() {
         ),
       );
 
-      // Get initial SliverAppBar expanded height
-      final appBarFinder = find.byType(SliverAppBar);
-      final appBar = tester.widget<SliverAppBar>(appBarFinder);
-      expect(appBar.expandedHeight, isNotNull);
-      expect(appBar.expandedHeight, greaterThan(0));
+      // No SliverAppBar — the collapsible header has been replaced by AppShell's AppBar
+      expect(find.byType(SliverAppBar), findsNothing);
 
       // Scroll down
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -200));
       await tester.pumpAndSettle();
 
-      // Header should still be visible (pinned) but collapsed
-      expect(appBarFinder, findsOneWidget);
+      // AppShell AppBar remains visible after scroll
+      expect(find.byType(AppBar), findsOneWidget);
 
       // Reset view
       tester.view.resetPhysicalSize();
@@ -301,7 +287,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('shows sidebar on desktop', (tester) async {
+    testWidgets('shows AppBar with home and settings icons on desktop', (tester) async {
       tester.view.physicalSize = const Size(1450, 900);
       tester.view.devicePixelRatio = 1.0;
 
@@ -313,8 +299,10 @@ void main() {
         ),
       );
 
-      // Sidebar should be visible via AppShell
-      expect(find.text('Library'), findsAtLeast(1)); // In sidebar and header
+      // AppBar should be visible with navigation icons
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.byIcon(Icons.settings), findsOneWidget);
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -360,7 +348,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('shows hamburger menu on mobile', (tester) async {
+    testWidgets('shows home icon on mobile (no hamburger menu)', (tester) async {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
 
@@ -372,8 +360,9 @@ void main() {
         ),
       );
 
-      // Hamburger menu should be visible
-      expect(find.byIcon(Icons.menu), findsOneWidget);
+      // Sidebar was removed — no hamburger menu; AppShell shows home icon instead
+      expect(find.byIcon(Icons.menu), findsNothing);
+      expect(find.byIcon(Icons.home), findsOneWidget);
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -505,7 +494,7 @@ void main() {
       await screenMatchesGolden(tester, 'library_page_mobile');
     });
 
-    testGoldens('collapsed header after scroll', (tester) async {
+    testGoldens('scrolled content layout', (tester) async {
       tester.view.physicalSize = const Size(1450, 900);
       tester.view.devicePixelRatio = 1.0;
 
@@ -517,11 +506,11 @@ void main() {
         ),
       );
 
-      // Scroll to collapse header
+      // Scroll down (no collapsible header — AppShell AppBar stays fixed)
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -200));
       await tester.pumpAndSettle();
 
-      await screenMatchesGolden(tester, 'library_page_collapsed_header');
+      await screenMatchesGolden(tester, 'library_page_scrolled');
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();

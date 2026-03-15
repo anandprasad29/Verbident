@@ -188,6 +188,7 @@ class _BuildOwnPageState extends ConsumerState<BuildOwnPage> {
     }
 
     return AppShell(
+      showHomeButton: true,
       child: _buildContent(
         context,
         contentLanguage,

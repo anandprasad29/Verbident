@@ -30,15 +30,10 @@ class Responsive {
   static const double tabletBreakpoint = 900;
   static const double desktopBreakpoint = 1200;
 
-  /// Get the actual content width, accounting for sidebar on wide screens.
+  /// Get the actual content width.
   /// Use this for determining grid columns, not raw screen width.
   static double getContentWidth(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    // If sidebar is showing, subtract its width
-    if (screenWidth >= AppConstants.sidebarBreakpoint) {
-      return screenWidth - AppConstants.sidebarWidth;
-    }
-    return screenWidth;
+    return MediaQuery.of(context).size.width;
   }
 
   /// Check if the content area is mobile-sized (< 600px)
@@ -182,9 +177,9 @@ class Responsive {
   }
 
   /// Check if we should show an embedded page header (SliverAppBar).
-  /// Returns true only on desktop where AppShell doesn't provide an AppBar.
+  /// Always false since AppShell now provides an AppBar on all screen sizes.
   static bool shouldShowPageHeader(BuildContext context) {
-    return MediaQuery.of(context).size.width >= AppConstants.sidebarBreakpoint;
+    return false;
   }
 
   /// Get the header title expanded scale based on content width.
@@ -214,10 +209,8 @@ class Responsive {
     final screenWidth = mediaQuery.size.width;
     final pixelRatio = mediaQuery.devicePixelRatio;
 
-    // Calculate content width (accounting for sidebar)
-    final contentWidth = screenWidth >= AppConstants.sidebarBreakpoint
-        ? screenWidth - AppConstants.sidebarWidth
-        : screenWidth;
+    // Content width is the full screen width (no sidebar)
+    final contentWidth = screenWidth;
 
     // Determine size category once
     final isDesktop = contentWidth >= desktopBreakpoint;
@@ -248,7 +241,7 @@ class Responsive {
         ? 0.70
         : 0.65;
 
-    final showHeader = screenWidth >= AppConstants.sidebarBreakpoint;
+    const showHeader = false;
     final headerScale = contentWidth >= 1000
         ? AppConstants.headerExpandedScaleLarge
         : AppConstants.headerExpandedScaleSmall;

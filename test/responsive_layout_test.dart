@@ -28,9 +28,8 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      testWidgets('subtracts sidebar width when at sidebar breakpoint',
+      testWidgets('returns full width at 800px (no sidebar)',
           (tester) async {
-        // 800px is at the sidebar breakpoint
         tester.view.physicalSize = const Size(800, 600);
         tester.view.devicePixelRatio = 1.0;
 
@@ -39,8 +38,7 @@ void main() {
             home: Builder(
               builder: (context) {
                 final contentWidth = Responsive.getContentWidth(context);
-                // 800 - 250 (sidebar) = 550
-                expect(contentWidth, equals(550.0));
+                expect(contentWidth, equals(800.0));
                 return const SizedBox();
               },
             ),
@@ -51,9 +49,8 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      testWidgets('subtracts sidebar width for tablet portrait (1200px)',
+      testWidgets('returns full width for tablet portrait (1200px)',
           (tester) async {
-        // Simulating tablet portrait mode like Samsung Tab
         tester.view.physicalSize = const Size(1200, 1920);
         tester.view.devicePixelRatio = 1.0;
 
@@ -62,8 +59,7 @@ void main() {
             home: Builder(
               builder: (context) {
                 final contentWidth = Responsive.getContentWidth(context);
-                // 1200 - 250 (sidebar) = 950
-                expect(contentWidth, equals(950.0));
+                expect(contentWidth, equals(1200.0));
                 return const SizedBox();
               },
             ),
@@ -126,7 +122,7 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      testWidgets('classifies 800px screen as mobile (sidebar reduces content)',
+      testWidgets('classifies 800px screen as tablet (no sidebar)',
           (tester) async {
         tester.view.physicalSize = const Size(800, 600);
         tester.view.devicePixelRatio = 1.0;
@@ -135,10 +131,9 @@ void main() {
           MaterialApp(
             home: Builder(
               builder: (context) {
-                // 800px screen with sidebar = 550px content
-                // 550 < 600, so mobile
-                expect(Responsive.isMobile(context), isTrue);
-                expect(Responsive.isTablet(context), isFalse);
+                // 800px content, 800 >= 600 && 800 < 1200, so tablet
+                expect(Responsive.isMobile(context), isFalse);
+                expect(Responsive.isTablet(context), isTrue);
                 expect(Responsive.isDesktop(context), isFalse);
                 return const SizedBox();
               },
@@ -150,7 +145,7 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      testWidgets('classifies 1200px screen as tablet (sidebar reduces content)',
+      testWidgets('classifies 1200px screen as desktop (no sidebar)',
           (tester) async {
         tester.view.physicalSize = const Size(1200, 1920);
         tester.view.devicePixelRatio = 1.0;
@@ -159,11 +154,10 @@ void main() {
           MaterialApp(
             home: Builder(
               builder: (context) {
-                // 1200px screen with sidebar = 950px content
-                // 950 >= 600 && 950 < 1200, so tablet
+                // 1200px content, 1200 >= 1200, so desktop
                 expect(Responsive.isMobile(context), isFalse);
-                expect(Responsive.isTablet(context), isTrue);
-                expect(Responsive.isDesktop(context), isFalse);
+                expect(Responsive.isTablet(context), isFalse);
+                expect(Responsive.isDesktop(context), isTrue);
                 return const SizedBox();
               },
             ),
@@ -183,8 +177,7 @@ void main() {
           MaterialApp(
             home: Builder(
               builder: (context) {
-                // 1600px screen with sidebar = 1350px content
-                // 1350 >= 1200, so desktop
+                // 1600px content, 1600 >= 1200, so desktop
                 expect(Responsive.isMobile(context), isFalse);
                 expect(Responsive.isTablet(context), isFalse);
                 expect(Responsive.isDesktop(context), isTrue);
@@ -222,16 +215,16 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      testWidgets('returns 3 columns for tablet content width (1200px screen)',
+      testWidgets('returns 3 columns for tablet content width (800px screen)',
           (tester) async {
-        tester.view.physicalSize = const Size(1200, 1920);
+        tester.view.physicalSize = const Size(800, 1920);
         tester.view.devicePixelRatio = 1.0;
 
         await tester.pumpWidget(
           MaterialApp(
             home: Builder(
               builder: (context) {
-                // Content width = 950px (tablet range)
+                // Content width = 800px (tablet range)
                 expect(
                   Responsive.getGridColumnCount(context),
                   equals(AppConstants.gridColumnsTablet), // 3
@@ -248,14 +241,14 @@ void main() {
 
       testWidgets('returns 5 columns for desktop content width',
           (tester) async {
-        tester.view.physicalSize = const Size(1600, 900);
+        tester.view.physicalSize = const Size(1200, 900);
         tester.view.devicePixelRatio = 1.0;
 
         await tester.pumpWidget(
           MaterialApp(
             home: Builder(
               builder: (context) {
-                // Content width = 1350px (desktop range)
+                // Content width = 1200px (desktop range)
                 expect(
                   Responsive.getGridColumnCount(context),
                   equals(AppConstants.gridColumnsDesktop), // 5
@@ -295,7 +288,7 @@ void main() {
       });
 
       testWidgets('returns 0.70 for tablet content width', (tester) async {
-        tester.view.physicalSize = const Size(1200, 1920);
+        tester.view.physicalSize = const Size(800, 1920);
         tester.view.devicePixelRatio = 1.0;
 
         await tester.pumpWidget(
@@ -317,7 +310,7 @@ void main() {
       });
 
       testWidgets('returns 0.75 for desktop content width', (tester) async {
-        tester.view.physicalSize = const Size(1600, 900);
+        tester.view.physicalSize = const Size(1200, 900);
         tester.view.devicePixelRatio = 1.0;
 
         await tester.pumpWidget(
@@ -341,7 +334,6 @@ void main() {
 
     group('getHeaderExpandedScale', () {
       testWidgets('returns small scale (1.5) for narrow content', (tester) async {
-        // 800px screen = 550px content, which is < 1000px
         tester.view.physicalSize = const Size(800, 600);
         tester.view.devicePixelRatio = 1.0;
 
@@ -363,32 +355,8 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      testWidgets('returns small scale (1.5) for 1200px tablet', (tester) async {
-        // 1200px screen = 950px content, which is < 1000px
-        tester.view.physicalSize = const Size(1200, 1920);
-        tester.view.devicePixelRatio = 1.0;
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Builder(
-              builder: (context) {
-                expect(
-                  Responsive.getHeaderExpandedScale(context),
-                  equals(AppConstants.headerExpandedScaleSmall), // 1.5
-                );
-                return const SizedBox();
-              },
-            ),
-          ),
-        );
-
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
-
       testWidgets('returns large scale (2.5) for wide content', (tester) async {
-        // 1300px screen = 1050px content, which is >= 1000px
-        tester.view.physicalSize = const Size(1300, 900);
+        tester.view.physicalSize = const Size(1000, 900);
         tester.view.devicePixelRatio = 1.0;
 
         await tester.pumpWidget(
@@ -411,45 +379,7 @@ void main() {
     });
 
     group('shouldShowPageHeader', () {
-      testWidgets('returns false for narrow screens', (tester) async {
-        tester.view.physicalSize = const Size(700, 600);
-        tester.view.devicePixelRatio = 1.0;
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Builder(
-              builder: (context) {
-                expect(Responsive.shouldShowPageHeader(context), isFalse);
-                return const SizedBox();
-              },
-            ),
-          ),
-        );
-
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
-
-      testWidgets('returns true at sidebar breakpoint', (tester) async {
-        tester.view.physicalSize = const Size(800, 600);
-        tester.view.devicePixelRatio = 1.0;
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Builder(
-              builder: (context) {
-                expect(Responsive.shouldShowPageHeader(context), isTrue);
-                return const SizedBox();
-              },
-            ),
-          ),
-        );
-
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
-
-      testWidgets('returns true for wide screens', (tester) async {
+      testWidgets('always returns false (AppShell provides AppBar)', (tester) async {
         tester.view.physicalSize = const Size(1200, 900);
         tester.view.devicePixelRatio = 1.0;
 
@@ -457,7 +387,7 @@ void main() {
           MaterialApp(
             home: Builder(
               builder: (context) {
-                expect(Responsive.shouldShowPageHeader(context), isTrue);
+                expect(Responsive.shouldShowPageHeader(context), isFalse);
                 return const SizedBox();
               },
             ),
@@ -519,16 +449,14 @@ void main() {
 
     testWidgets('content width at exact tablet/desktop boundary (1200px)',
         (tester) async {
-      // Screen width that gives exactly 1200px content width
-      // 1200 + 250 (sidebar) = 1450px screen
-      tester.view.physicalSize = const Size(1450, 900);
+      tester.view.physicalSize = const Size(1200, 900);
       tester.view.devicePixelRatio = 1.0;
 
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
             builder: (context) {
-              // 1450 - 250 = 1200px content, which is exactly desktop
+              // 1200px content, which is exactly desktop
               expect(Responsive.isDesktop(context), isTrue);
               expect(Responsive.getGridColumnCount(context), equals(5));
               return const SizedBox();
@@ -543,16 +471,14 @@ void main() {
 
     testWidgets('content width just below desktop breakpoint (1199px)',
         (tester) async {
-      // Screen width that gives 1199px content width
-      // 1199 + 250 (sidebar) = 1449px screen
-      tester.view.physicalSize = const Size(1449, 900);
+      tester.view.physicalSize = const Size(1199, 900);
       tester.view.devicePixelRatio = 1.0;
 
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
             builder: (context) {
-              // 1449 - 250 = 1199px content, which is tablet
+              // 1199px content, which is tablet
               expect(Responsive.isTablet(context), isTrue);
               expect(Responsive.getGridColumnCount(context), equals(3));
               return const SizedBox();

@@ -67,6 +67,13 @@
   "categorySectionActions": "Acciones y objetos",
   "categorySectionInstructional": "Palabras instructivas",
   "categorySectionExpression": "Expresión",
-  "categorySectionNonDental": "No dental"
+  "categorySectionNonDental": "No dental",
+  "dashboardWelcome": "¿Qué te gustaría hacer?",
+  "dashboardBeforeVisit": "Antes de la visita",
+  "dashboardDuringVisit": "Durante la visita",
+  "dashboardLibrary": "Biblioteca",
+  "dashboardBuildOwn": "Crea el tuyo",
+  "dashboardMyTemplates": "Mis plantillas",
+  "dashboardCreateNew": "Crear nueva"
 }
 

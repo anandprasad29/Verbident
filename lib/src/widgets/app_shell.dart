@@ -1,85 +1,52 @@
 import 'package:flutter/material.dart';
-import '../constants/app_constants.dart';
+import 'package:go_router/go_router.dart';
+import '../routing/routes.dart';
 import '../theme/app_colors.dart';
 import 'language_selector.dart';
-import 'sidebar.dart';
 
 /// Shared application shell that provides consistent layout across pages.
-/// Handles responsive design with sidebar (desktop) or drawer (mobile).
+/// Provides an AppBar with optional home icon, title, language selector, and settings gear.
 class AppShell extends StatelessWidget {
   /// The main content of the page
   final Widget child;
 
-  /// Optional app bar title for mobile layout
+  /// Optional app bar title
   final String? title;
 
-  /// Whether to show the hamburger menu on mobile (defaults to true)
-  final bool showDrawer;
+  /// Whether to show the home button in the leading position (defaults to false)
+  /// Set to true for all pages except the dashboard.
+  final bool showHomeButton;
+
+  /// Whether to show the settings gear icon in actions (defaults to true)
+  /// Set to false on the settings page itself.
+  final bool showSettingsButton;
 
   /// Whether to show the language selector (defaults to true)
-  /// Set to false for dashboard page
   final bool showLanguageSelector;
 
   const AppShell({
     super.key,
     required this.child,
     this.title,
-    this.showDrawer = true,
+    this.showHomeButton = false,
+    this.showSettingsButton = true,
     this.showLanguageSelector = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isWideScreen = size.width >= AppConstants.sidebarBreakpoint;
-
-    // On phones (shortest side < 600), always use hamburger menu
-    // This prevents sidebar from showing on phones in landscape mode
-    final shortestSide = size.shortestSide;
-    final isPhone = shortestSide < 600;
-
-    if (isWideScreen && !isPhone) {
-      return _buildDesktopLayout(context);
-    } else {
-      return _buildMobileLayout(context);
-    }
-  }
-
-  /// Desktop layout with permanent sidebar
-  /// Language selector is handled by individual pages in their SliverAppBar
-  Widget _buildDesktopLayout(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appBackground,
-      body: SafeArea(
-        // Keep content below status bar but allow content to extend to edges
-        left: false,
-        right: false,
-        bottom: false,
-        child: Row(
-          children: [
-            const SizedBox(
-              width: AppConstants.sidebarWidth,
-              child: Sidebar(),
-            ),
-            Expanded(
-              child: Container(
-                color: context.appBackground,
-                child: child,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Mobile layout with hamburger menu and drawer
-  Widget _buildMobileLayout(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appBackground,
       appBar: AppBar(
         backgroundColor: context.appSidebarBackground,
         iconTheme: const IconThemeData(color: Colors.white),
+        automaticallyImplyLeading: false,
+        leading: showHomeButton
+            ? IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () => context.go(Routes.home),
+              )
+            : null,
         title: title != null
             ? Text(
                 title!,
@@ -89,33 +56,20 @@ class AppShell extends StatelessWidget {
                 ),
               )
             : null,
-        leading: showDrawer
-            ? Builder(
-                builder: (context) => IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                ),
-              )
-            : null,
         actions: [
           if (showLanguageSelector)
             const Padding(
               padding: EdgeInsets.only(right: 8),
-              // Use compact selector in mobile app bar
               child: LanguageSelector(compact: true),
+            ),
+          if (showSettingsButton)
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () => context.go(Routes.settings),
             ),
         ],
       ),
-      drawer: showDrawer
-          ? const Drawer(
-              width: AppConstants.sidebarWidth,
-              child: Sidebar(),
-            )
-          : null,
-      body: Container(
-        color: context.appBackground,
-        child: child,
-      ),
+      body: child,
     );
   }
 }

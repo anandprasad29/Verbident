@@ -289,5 +289,33 @@
   "categorySectionNonDental": "Non-Dental",
   "@categorySectionNonDental": {
     "description": "Category header for non-dental items"
+  },
+  "dashboardWelcome": "What would you like to do?",
+  "@dashboardWelcome": {
+    "description": "Welcome text on dashboard"
+  },
+  "dashboardBeforeVisit": "Before the Visit",
+  "@dashboardBeforeVisit": {
+    "description": "Dashboard tile label for before visit"
+  },
+  "dashboardDuringVisit": "During the Visit",
+  "@dashboardDuringVisit": {
+    "description": "Dashboard tile label for during visit"
+  },
+  "dashboardLibrary": "Library",
+  "@dashboardLibrary": {
+    "description": "Dashboard tile label for library"
+  },
+  "dashboardBuildOwn": "Build Your Own",
+  "@dashboardBuildOwn": {
+    "description": "Dashboard tile label for build your own"
+  },
+  "dashboardMyTemplates": "My Templates",
+  "@dashboardMyTemplates": {
+    "description": "Dashboard section header for custom templates"
+  },
+  "dashboardCreateNew": "Create New",
+  "@dashboardCreateNew": {
+    "description": "Dashboard tile label for creating a new template"
   }
 }

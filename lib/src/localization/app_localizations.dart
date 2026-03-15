@@ -505,6 +505,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Non-Dental'**
   String get categorySectionNonDental;
+
+  /// Welcome text on dashboard
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to do?'**
+  String get dashboardWelcome;
+
+  /// Dashboard tile label for before visit
+  ///
+  /// In en, this message translates to:
+  /// **'Before the Visit'**
+  String get dashboardBeforeVisit;
+
+  /// Dashboard tile label for during visit
+  ///
+  /// In en, this message translates to:
+  /// **'During the Visit'**
+  String get dashboardDuringVisit;
+
+  /// Dashboard tile label for library
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get dashboardLibrary;
+
+  /// Dashboard tile label for build your own
+  ///
+  /// In en, this message translates to:
+  /// **'Build Your Own'**
+  String get dashboardBuildOwn;
+
+  /// Dashboard section header for custom templates
+  ///
+  /// In en, this message translates to:
+  /// **'My Templates'**
+  String get dashboardMyTemplates;
+
+  /// Dashboard tile label for creating a new template
+  ///
+  /// In en, this message translates to:
+  /// **'Create New'**
+  String get dashboardCreateNew;
 }
 
 class _AppLocalizationsDelegate

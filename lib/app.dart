@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +22,15 @@ class _VerbidentAppState extends ConsumerState<VerbidentApp> {
   @override
   void initState() {
     super.initState();
+
+    // Safety timer: remove splash after 3 seconds no matter what
+    final safetyTimer = Timer(const Duration(seconds: 3), () {
+      if (!_initialized) {
+        _initialized = true;
+        FlutterNativeSplash.remove();
+      }
+    });
+
     // Remove splash screen after first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_initialized) {
@@ -34,6 +45,7 @@ class _VerbidentAppState extends ConsumerState<VerbidentApp> {
           FlutterNativeSplash.remove();
         });
       }
+      safetyTimer.cancel();
     });
   }
 

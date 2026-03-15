@@ -270,6 +270,7 @@ class _CustomTemplatePageState extends ConsumerState<CustomTemplatePage> {
     // Show loading state while templates are being loaded from storage
     if (isLoading) {
       return AppShell(
+        showHomeButton: true,
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -292,6 +293,7 @@ class _CustomTemplatePageState extends ConsumerState<CustomTemplatePage> {
     // Only show "not found" after loading is complete
     if (template == null) {
       return AppShell(
+        showHomeButton: true,
         child: Center(
           child: Text(
             'Template not found',
@@ -305,6 +307,7 @@ class _CustomTemplatePageState extends ConsumerState<CustomTemplatePage> {
     }
 
     return AppShell(
+      showHomeButton: true,
       child: isEditMode
           ? _buildEditMode(context, template)
           : _buildViewMode(context, template),

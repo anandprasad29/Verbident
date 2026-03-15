@@ -101,6 +101,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     }
 
     return AppShell(
+      showHomeButton: true,
       child: _buildLibraryContent(
         context,
         ttsService,

@@ -22,6 +22,8 @@ class SettingsPage extends ConsumerWidget {
     final padding = Responsive.getContentPadding(context);
 
     return AppShell(
+      showHomeButton: true,
+      showSettingsButton: false,
       child: Container(
         color: context.appBackground,
         child: CustomScrollView(

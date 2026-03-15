@@ -61,7 +61,7 @@ void main() {
   }
 
   group('BeforeVisitPage Widget Tests', () {
-    testWidgets('renders header in SliverAppBar', (tester) async {
+    testWidgets('renders AppBar from AppShell (no SliverAppBar)', (tester) async {
       tester.view.physicalSize = const Size(1450, 900);
       tester.view.devicePixelRatio = 1.0;
 
@@ -73,10 +73,12 @@ void main() {
         ),
       );
 
-      expect(find.byType(SliverAppBar), findsOneWidget);
+      // SliverAppBar is no longer used — showHeader is always false
+      expect(find.byType(SliverAppBar), findsNothing);
+      expect(find.byType(FlexibleSpaceBar), findsNothing);
 
-      final flexSpaceBarFinder = find.byType(FlexibleSpaceBar);
-      expect(flexSpaceBarFinder, findsOneWidget);
+      // AppShell provides a regular AppBar instead
+      expect(find.byType(AppBar), findsOneWidget);
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -119,7 +121,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('uses SliverAppBar for collapsible header', (tester) async {
+    testWidgets('shows home icon in AppShell AppBar', (tester) async {
       tester.view.physicalSize = const Size(1450, 900);
       tester.view.devicePixelRatio = 1.0;
 
@@ -131,11 +133,10 @@ void main() {
         ),
       );
 
-      final appBarFinder = find.byType(SliverAppBar);
-      expect(appBarFinder, findsOneWidget);
-
-      final appBar = tester.widget<SliverAppBar>(appBarFinder);
-      expect(appBar.pinned, isTrue);
+      // SliverAppBar is no longer used — AppShell provides a simple AppBar
+      expect(find.byType(SliverAppBar), findsNothing);
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byIcon(Icons.home), findsOneWidget);
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -159,7 +160,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('shows hamburger menu on mobile', (tester) async {
+    testWidgets('shows home icon on mobile (no hamburger menu)', (tester) async {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
 
@@ -171,7 +172,9 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(Icons.menu), findsOneWidget);
+      // Sidebar was removed — no hamburger menu; AppShell shows home icon instead
+      expect(find.byIcon(Icons.menu), findsNothing);
+      expect(find.byIcon(Icons.home), findsOneWidget);
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
