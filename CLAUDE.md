@@ -105,13 +105,17 @@ See `Agents.md` for full deployment docs including version numbering, fastlane c
 
 Quick reference:
 ```bash
-fastlane version          # Show current version
-fastlane bump_patch       # Bump patch version
-fastlane ios beta         # Build & upload to TestFlight
-fastlane android beta     # Build & upload to Play Store Internal
-fastlane ios release      # Full release (binary + metadata)
-fastlane android release  # Full release (binary + metadata)
+fastlane version             # Show current version
+fastlane bump_patch          # Bump patch version
+fastlane ios beta            # Build & upload to TestFlight
+fastlane android beta        # Build & upload to Play Store Internal
+fastlane ios release         # Full release (binary + metadata + screenshots)
+fastlane android release     # Full release (binary + metadata + screenshots)
+fastlane ios screenshots     # Capture iOS screenshots via XCUITest (snapshot)
+fastlane android screenshots # Capture Android screenshots via screengrab
 ```
+
+Screenshot automation uses `integration_test/screenshot_test.dart` (Flutter) and `ios/RunnerUITests/SnapshotTests.swift` (XCUITest). Config in `fastlane/Snapfile` (iOS) and `fastlane/Screengrabfile` (Android).
 
 ## Key Files Quick Reference
 
@@ -123,7 +127,7 @@ fastlane android release  # Full release (binary + metadata)
 | `lib/src/routing/app_router.dart` | All routes and navigation |
 | `lib/src/routing/routes.dart` | Route path constants |
 | `lib/src/constants/app_constants.dart` | Breakpoints, grid, dimensions |
-| `lib/src/widgets/app_shell.dart` | App shell with sidebar |
+| `lib/src/widgets/app_shell.dart` | App shell with AppBar navigation |
 | `lib/src/theme/app_theme.dart` | Theme definition |
 | `lib/src/localization/content_translations.dart` | Per-language content strings |
 | `scripts/build.sh` | Full code generation pipeline |

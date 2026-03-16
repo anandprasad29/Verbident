@@ -1,6 +1,7 @@
-Version 1.0.0:
-• New "During the Visit" interactive page — follow along with each step of the dental appointment
-• Expanded dental library with 19 new items organized by category with sticky headers
-• Redesigned Before Visit story with improved illustrations
-• Fresh new look with InstrumentSans font and CareQuest brand colors
-• Visit Workflow accordion in the sidebar for easy navigation
+Version 2.0.0:
+• Redesigned navigation — new AppBar replaces sidebar for cleaner experience
+• Dashboard redesigned as a central hub
+• Language selector now updates all UI strings in real time
+• Translucent "Create Template" button with optional naming
+• Rebranded to Verbident with updated URLs
+• Improved screen size support across phones and tablets

@@ -4,11 +4,11 @@
 # Required: 6.7" (iPhone 15 Pro Max), 6.5" (iPhone 14 Plus), 5.5" (iPhone 8 Plus)
 # iPad: 12.9" and 11"
 devices([
-  "iPhone 16 Pro Max",       # 6.9" - newest large phone
-  "iPhone 15 Pro Max",       # 6.7" display (required)
-  "iPhone 8 Plus",           # 5.5" display (required)
-  "iPad Pro (12.9-inch) (6th generation)",  # 12.9" iPad
-  "iPad Pro (11-inch) (4th generation)"     # 11" iPad
+  "iPhone 16 Pro Max",       # 6.9" - large phone
+  "iPhone 16 Pro",           # 6.3" - standard Pro
+  "iPhone 16e",              # 4.7" - compact display
+  "iPad Pro 13-inch (M4)",   # 13" iPad
+  "iPad Pro 11-inch (M4)"   # 11" iPad
 ])
 
 # Languages for screenshots
@@ -18,7 +18,7 @@ languages(["en-US"])
 scheme("Runner")
 
 # Workspace
-workspace("../ios/Runner.xcworkspace")
+workspace("ios/Runner.xcworkspace")
 
 # Output directory
 output_directory("./fastlane/screenshots")

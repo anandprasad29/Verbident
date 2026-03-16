@@ -90,14 +90,9 @@ platform :android do
     end
     
     # Run screengrab (requires emulator running)
-    # screengrab
+    screengrab
     
-    UI.important("For manual screenshots:")
-    UI.message("1. Start emulator: emulator -avd <name>")
-    UI.message("2. Run: flutter run -d emulator-5554")
-    UI.message("3. Navigate to each screen")
-    UI.message("4. Capture: adb shell screencap -p /sdcard/screen.png && adb pull /sdcard/screen.png")
-    UI.message("5. Save to: fastlane/metadata/android/en-US/images/phoneScreenshots/")
+    UI.success("✅ Android screenshots captured!")
   end
   
   desc "Full release with metadata"
@@ -182,21 +177,17 @@ platform :ios do
     UI.message("📱 iOS Screenshot Capture")
     UI.message("=========================")
     
-    # Note: Full automation requires UI test target in Xcode
-    # snapshot
-    
-    UI.important("For manual screenshots:")
-    UI.message("1. Run: flutter run -d 'iPhone 16 Pro Max'")
-    UI.message("2. Navigate to each screen")
-    UI.message("3. Press Cmd+S in Simulator to save screenshot")
-    UI.message("4. Save to: fastlane/screenshots/en-US/")
-    UI.message("")
-    UI.message("Required devices:")
-    UI.message("  - iPhone 16 Pro Max (6.9\")")
-    UI.message("  - iPhone 15 Pro Max (6.7\")")
-    UI.message("  - iPhone 8 Plus (5.5\")")
-    UI.message("  - iPad Pro 12.9\"")
-    UI.message("  - iPad Pro 11\"")
+    # Pre-build Flutter for simulator so xcodebuild's Run Script phase succeeds
+    Dir.chdir(PROJECT_ROOT) do
+      sh("flutter build ios --debug --simulator --no-codesign")
+    end
+
+    # Automated screenshot capture via XCUITest
+    snapshot(
+      derived_data_path: "#{PROJECT_ROOT}/build/ios"
+    )
+
+    UI.success("✅ iOS screenshots captured!")
   end
   
   desc "Full release with metadata"
