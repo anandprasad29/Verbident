@@ -77,6 +77,10 @@
   "dashboardCreateNew": "Crear nueva",
   "ok": "Aceptar",
   "templateNotFound": "Plantilla no encontrada",
-  "allImagesAdded": "Todas las imágenes han sido agregadas"
+  "allImagesAdded": "Todas las imágenes han sido agregadas",
+  "settingsRestoreDefaults": "Restaurar valores predeterminados",
+  "settingsRestoreDefaultsHint": "Restablecer todos los ajustes a los valores originales",
+  "settingsRestoreDefaultsConfirm": "¿Estás seguro de que quieres restaurar todos los ajustes a sus valores predeterminados?",
+  "restore": "Restaurar"
 }
 

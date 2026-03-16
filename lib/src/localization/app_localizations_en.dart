@@ -257,4 +257,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allImagesAdded => 'All images have been added';
+
+  @override
+  String get settingsRestoreDefaults => 'Restore Defaults';
+
+  @override
+  String get settingsRestoreDefaultsHint =>
+      'Reset all settings to original values';
+
+  @override
+  String get settingsRestoreDefaultsConfirm =>
+      'Are you sure you want to restore all settings to their defaults?';
+
+  @override
+  String get restore => 'Restore';
 }

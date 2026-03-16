@@ -7,10 +7,11 @@ part of 'content_language_provider.dart';
 // **************************************************************************
 
 String _$contentLanguageNotifierHash() =>
-    r'8e7d67a0e1c6257365067412eabc973e7bc6281a';
+    r'6a89b7c4d908ef427f4f1e998fbefc6d5b187994';
 
 /// Notifier that manages the currently selected content language.
 /// This affects captions and TTS on non-dashboard routes.
+/// Persists selection to SharedPreferences.
 ///
 /// Copied from [ContentLanguageNotifier].
 @ProviderFor(ContentLanguageNotifier)

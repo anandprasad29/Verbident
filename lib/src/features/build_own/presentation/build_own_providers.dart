@@ -47,7 +47,7 @@ class CustomTemplatesNotifier extends _$CustomTemplatesNotifier {
       // Clear any previous error state
       ref.read(templatesErrorProvider.notifier).state = null;
 
-      _storageService = await ref.read(templateStorageServiceProvider.future);
+      _storageService = ref.read(templateStorageServiceProvider);
       final templates = _storageService!.loadTemplates();
       state = templates;
     } catch (e) {
@@ -88,7 +88,7 @@ class CustomTemplatesNotifier extends _$CustomTemplatesNotifier {
     if (isNameDuplicate(template.name)) return 'Duplicate template name';
 
     try {
-      _storageService ??= await ref.read(templateStorageServiceProvider.future);
+      _storageService ??= ref.read(templateStorageServiceProvider);
       final success = await _storageService!.addTemplate(template);
       if (success) {
         state = [...state, template];
@@ -108,7 +108,7 @@ class CustomTemplatesNotifier extends _$CustomTemplatesNotifier {
     }
 
     try {
-      _storageService ??= await ref.read(templateStorageServiceProvider.future);
+      _storageService ??= ref.read(templateStorageServiceProvider);
       final success = await _storageService!.updateTemplate(template);
       if (success) {
         state = state.map((t) => t.id == template.id ? template : t).toList();
@@ -123,7 +123,7 @@ class CustomTemplatesNotifier extends _$CustomTemplatesNotifier {
   /// Deletes a template by ID. Returns error message or null on success.
   Future<String?> deleteTemplate(String templateId) async {
     try {
-      _storageService ??= await ref.read(templateStorageServiceProvider.future);
+      _storageService ??= ref.read(templateStorageServiceProvider);
       final success = await _storageService!.deleteTemplate(templateId);
       if (success) {
         state = state.where((t) => t.id != templateId).toList();

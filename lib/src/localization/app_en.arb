@@ -329,5 +329,21 @@
   "allImagesAdded": "All images have been added",
   "@allImagesAdded": {
     "description": "Message when all available images are already in the template"
+  },
+  "settingsRestoreDefaults": "Restore Defaults",
+  "@settingsRestoreDefaults": {
+    "description": "Restore defaults button label"
+  },
+  "settingsRestoreDefaultsHint": "Reset all settings to original values",
+  "@settingsRestoreDefaultsHint": {
+    "description": "Restore defaults hint text"
+  },
+  "settingsRestoreDefaultsConfirm": "Are you sure you want to restore all settings to their defaults?",
+  "@settingsRestoreDefaultsConfirm": {
+    "description": "Confirmation message for restore defaults"
+  },
+  "restore": "Restore",
+  "@restore": {
+    "description": "Restore button text"
   }
 }

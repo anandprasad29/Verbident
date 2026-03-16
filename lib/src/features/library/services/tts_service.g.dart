@@ -107,9 +107,10 @@ final ttsSettingsProvider = Provider<TtsSettings>.internal(
 // ignore: unused_element
 typedef TtsSettingsRef = ProviderRef<TtsSettings>;
 String _$ttsSettingsNotifierHash() =>
-    r'ee015471543746cee3f6194f54da196a89b3c4b4';
+    r'eebcd4c76b5dceba7f3ad526e374d533767997c3';
 
 /// Notifier for TTS settings that automatically applies changes to the TTS service.
+/// Persists settings to SharedPreferences.
 ///
 /// Copied from [TtsSettingsNotifier].
 @ProviderFor(TtsSettingsNotifier)

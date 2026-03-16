@@ -3,9 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../common/services/shared_preferences_provider.dart';
 import '../../../localization/content_language_provider.dart';
 
 part 'tts_service.g.dart';
+
+const String _ttsSpeechRateKey = 'tts_speech_rate';
+const String _ttsVoiceTypeKey = 'tts_voice_type';
+const String _ttsVolumeKey = 'tts_volume';
 
 /// Service for text-to-speech functionality.
 /// Used to speak library item captions when tapped.
@@ -479,25 +484,52 @@ class TtsSettings {
 }
 
 /// Notifier for TTS settings that automatically applies changes to the TTS service.
+/// Persists settings to SharedPreferences.
 @Riverpod(keepAlive: true)
 class TtsSettingsNotifier extends _$TtsSettingsNotifier {
   @override
   TtsSettings build() {
-    return const TtsSettings();
+    final prefs = ref.read(sharedPreferencesProvider);
+    final speechRate = prefs.getDouble(_ttsSpeechRateKey);
+    final volume = prefs.getDouble(_ttsVolumeKey);
+    final voiceTypeName = prefs.getString(_ttsVoiceTypeKey);
+    final voiceType = voiceTypeName != null
+        ? VoiceType.values.where((v) => v.name == voiceTypeName).firstOrNull
+        : null;
+    return TtsSettings(
+      speechRate: speechRate ?? 0.5,
+      volume: volume ?? 1.0,
+      voiceType: voiceType ?? VoiceType.female,
+    );
+  }
+
+  /// Reset to default TTS settings.
+  void reset() {
+    state = const TtsSettings();
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.remove(_ttsSpeechRateKey);
+    prefs.remove(_ttsVoiceTypeKey);
+    prefs.remove(_ttsVolumeKey);
+    _applyToTtsService();
   }
 
   void setSpeechRate(double rate) {
     state = state.copyWith(speechRate: rate);
+    ref.read(sharedPreferencesProvider).setDouble(_ttsSpeechRateKey, rate);
     _applyToTtsService();
   }
 
   void setVoiceType(VoiceType voiceType) {
     state = state.copyWith(voiceType: voiceType);
+    ref
+        .read(sharedPreferencesProvider)
+        .setString(_ttsVoiceTypeKey, voiceType.name);
     _applyToTtsService();
   }
 
   void setVolume(double volume) {
     state = state.copyWith(volume: volume);
+    ref.read(sharedPreferencesProvider).setDouble(_ttsVolumeKey, volume);
     _applyToTtsService();
   }
 

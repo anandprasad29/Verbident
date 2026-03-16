@@ -6,9 +6,10 @@ part of 'theme_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$themeModeNotifierHash() => r'b22e770071355b4c7fe91d88d53ba669c6fb4512';
+String _$themeModeNotifierHash() => r'ce643aa29f628e31051e2886462896198ac74872';
 
 /// Notifier that manages the app's theme mode.
+/// Persists selection to SharedPreferences.
 ///
 /// Copied from [ThemeModeNotifier].
 @ProviderFor(ThemeModeNotifier)

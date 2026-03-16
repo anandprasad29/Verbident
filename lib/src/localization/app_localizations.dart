@@ -565,6 +565,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All images have been added'**
   String get allImagesAdded;
+
+  /// Restore defaults button label
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Defaults'**
+  String get settingsRestoreDefaults;
+
+  /// Restore defaults hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Reset all settings to original values'**
+  String get settingsRestoreDefaultsHint;
+
+  /// Confirmation message for restore defaults
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to restore all settings to their defaults?'**
+  String get settingsRestoreDefaultsConfirm;
+
+  /// Restore button text
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restore;
 }
 
 class _AppLocalizationsDelegate

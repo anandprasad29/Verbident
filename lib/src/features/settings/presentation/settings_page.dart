@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../constants/app_constants.dart';
 import '../../../localization/app_localizations.dart';
+import '../../../localization/content_language_provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/theme_provider.dart';
 import '../../../utils/responsive.dart';
@@ -77,6 +78,8 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   _TtsSettingsCard(),
+                  const SizedBox(height: 32),
+                  _RestoreDefaultsButton(),
                   const SizedBox(height: 48),
                 ]),
               ),
@@ -338,6 +341,61 @@ class _VoiceTypeSelector extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+/// Button to restore all settings to defaults
+class _RestoreDefaultsButton extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+
+    return Center(
+      child: TextButton.icon(
+        onPressed: () => _showConfirmDialog(context, ref, l10n),
+        icon: Icon(Icons.restore, color: context.appTextSubtle),
+        label: Text(
+          l10n?.settingsRestoreDefaults ?? 'Restore Defaults',
+          style: TextStyle(
+            fontFamily: 'InstrumentSans',
+            fontSize: 14,
+            color: context.appTextSubtle,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showConfirmDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations? l10n,
+  ) {
+    showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n?.settingsRestoreDefaults ?? 'Restore Defaults'),
+        content: Text(
+          l10n?.settingsRestoreDefaultsConfirm ??
+              'Are you sure you want to restore all settings to their defaults?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n?.cancel ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(themeModeNotifierProvider.notifier).reset();
+              ref.read(ttsSettingsNotifierProvider.notifier).reset();
+              ref.read(contentLanguageNotifierProvider.notifier).reset();
+              Navigator.of(context).pop();
+            },
+            child: Text(l10n?.restore ?? 'Restore'),
+          ),
+        ],
       ),
     );
   }
